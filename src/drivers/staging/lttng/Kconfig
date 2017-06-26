@@ -1,0 +1,18 @@
+config LTTNG
+	tristate "LTTng support"
+	select TRACEPOINTS
+	select VIRTUALIZATION if X86
+	select KVM if X86
+	select KVM_INTEL if X86
+	select KVM_AMD if X86
+	help
+	  LTTng is an open source tracing framework for Linux.
+
+	  See https://lttng.org/
+
+	  To compile as a set of modules, choose M here. To compile into
+	  the Linux kernel image, choose Y.
+
+	  If unsure, say N.
+
+source "drivers/staging/lttng/tests/Kconfig"

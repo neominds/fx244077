@@ -2192,7 +2192,7 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 					dev_err(&adev->dev,
 						"could not request %d gpio\n",
 						cs_gpio);
-				else if (gpio_direction_output(cs_gpio, 1))
+				else if (gpio_direction_output(cs_gpio, !pl022->cs_inverts[i])) //wr test 0624
 					dev_err(&adev->dev,
 						"could not set gpio %d as output\n",
 						cs_gpio);
@@ -2360,6 +2360,13 @@ static int pl022_resume(struct device *dev)
 {
 	struct pl022 *pl022 = dev_get_drvdata(dev);
 	int ret;
+
+#if 1 /* FX 06/24/17 Start */
+	int i;
+	for (i = 0; i < pl022->master->num_chipselect; i++) {
+		gpio_direction_output(pl022->chipselects[i], !pl022->cs_inverts[i]);
+	}
+#endif /* FX 06/24/17 End*/
 
 	ret = pm_runtime_force_resume(dev);
 	if (ret)

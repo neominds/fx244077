@@ -109,10 +109,13 @@ struct iproc_pcie {
 
 int iproc_pcie_setup(struct iproc_pcie *pcie, struct list_head *res);
 int iproc_pcie_remove(struct iproc_pcie *pcie);
-
+int iproc_pcie_resume(struct iproc_pcie *pcie, struct list_head *res);/* FX 06/24/17 */
+int iproc_pcie_suspend(struct iproc_pcie *pcie);/* FX 06/24/17 */
 #ifdef CONFIG_PCIE_IPROC_MSI
 int iproc_msi_init(struct iproc_pcie *pcie, struct device_node *node);
 void iproc_msi_exit(struct iproc_pcie *pcie);
+void iproc_msi_enable(struct iproc_msi *msi);/* FX 06/24/17 */
+void iproc_msi_disable(struct iproc_msi *msi);/* FX 06/24/17 */
 #else
 static inline int iproc_msi_init(struct iproc_pcie *pcie,
 				 struct device_node *node)
@@ -122,6 +125,14 @@ static inline int iproc_msi_init(struct iproc_pcie *pcie,
 static inline void iproc_msi_exit(struct iproc_pcie *pcie)
 {
 }
+/*FX 06/24/17 Start*/
+static inline void iproc_msi_enable(struct iproc_msi *msi)
+{
+}
+static inline void iproc_msi_disable(struct iproc_msi *msi)
+{
+}
+/*FX 06/24/07 End */
 #endif
 
 #endif /* _PCIE_IPROC_H */

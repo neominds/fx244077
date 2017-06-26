@@ -534,6 +534,7 @@ static struct pci_ops iproc_pcie_ops = {
 
 static void iproc_pcie_reset(struct iproc_pcie *pcie)
 {
+	struct device *dev = pcie->dev; /* FX 06/24/17 */
 	u32 val;
 	//peter for test /* FX 6/5/2017 */
 	u32 link_sts;  /* FX 6/5/2017 */
@@ -544,27 +545,15 @@ static void iproc_pcie_reset(struct iproc_pcie *pcie)
 	 */
 	if (pcie->ep_is_internal)
 		return;
-
-	/*
-	 * Select perst_b signal as reset source. Put the device into reset,
-	 * and then bring it out of reset
-	 */
+	/* check PCIe reset status */
 	val = iproc_pcie_read_reg(pcie, IPROC_PCIE_CLK_CTRL);
-#if 0 /* FX 6/5/2017 */  
-	val &= ~EP_PERST_SOURCE_SELECT & ~EP_MODE_SURVIVE_PERST &
-		~RC_PCIE_RST_OUTPUT;
-	iproc_pcie_write_reg(pcie, IPROC_PCIE_CLK_CTRL, val);
-	udelay(250);
-
-	val |= RC_PCIE_RST_OUTPUT;
-	iproc_pcie_write_reg(pcie, IPROC_PCIE_CLK_CTRL, val);
-	msleep(100);
 /* FX 6/5/2017 Start */
-#else
-	//peter for test
-	link_sts = iproc_pcie_read_reg(pcie, IPROC_PCIE_LINK_STATUS);
-	dev_info(pcie->dev, "link status=0x%08x clk=0x%08x \n", link_sts, val);
-	if ((val != RC_PCIE_RST_OUTPUT) || !(link_sts & PCIE_PHYLINKUP) || !(link_sts & PCIE_DL_ACTIVE)) {
+	dev_info(dev, "PCIe status=0x%x\n", val);
+	if (!(val & RC_PCIE_RST_OUTPUT)) {
+		/*
+		* Select perst_b signal as reset source. Put the device into reset,
+		* and then bring it out of reset
+		*/
 		val &= ~EP_PERST_SOURCE_SELECT & ~EP_MODE_SURVIVE_PERST &
 			~RC_PCIE_RST_OUTPUT;
 		iproc_pcie_write_reg(pcie, IPROC_PCIE_CLK_CTRL, val);
@@ -572,9 +561,8 @@ static void iproc_pcie_reset(struct iproc_pcie *pcie)
 
 		val |= RC_PCIE_RST_OUTPUT;
 		iproc_pcie_write_reg(pcie, IPROC_PCIE_CLK_CTRL, val);
-		msleep(100);
+		msleep(1000);
 	}
-#endif
 /* FX 6/5/2017 End */
 }
 
@@ -1333,6 +1321,105 @@ int iproc_pcie_remove(struct iproc_pcie *pcie)
 }
 EXPORT_SYMBOL(iproc_pcie_remove);
 
+/* FX 06/24/17 Start */
+
+int iproc_pcie_resume(struct iproc_pcie *pcie, struct list_head *res)
+{
+	int ret;
+	struct pci_bus *bus;
+
+	if (!pcie || !pcie->dev || !pcie->base)
+		return -EINVAL;
+
+	if (pcie->phy) {
+		ret = phy_init(pcie->phy);
+		if (ret) {
+			dev_err(pcie->dev, "unable to initialize PCIe PHY\n");
+			return ret;
+		}
+
+		ret = phy_power_on(pcie->phy);
+		if (ret) {
+			dev_err(pcie->dev, "unable to power on PCIe PHY\n");
+			goto err_exit_phy;
+		}
+	}
+
+	iproc_pcie_reset(pcie);
+
+	if (pcie->need_ob_cfg) {
+		ret = iproc_pcie_map_ranges(pcie, res);
+		if (ret) {
+			dev_err(pcie->dev, "map failed\n");
+			goto err_power_off_phy;
+		}
+	}
+	//peter for test
+	/*
+	if (pcie->need_ib_cfg) {
+		ret = iproc_pcie_map_ib_ranges(pcie);
+		if (ret) {
+			dev_err(pcie->dev, "inbound mapping failed\n");
+			goto err_power_off_phy;
+		}
+	}
+	*/
+
+	/*
+	 * Based on testing, give more time for PHY link to become active.
+	 */
+	msleep(20);
+
+	ret = iproc_pcie_check_link(pcie, pcie->root_bus);
+	if (ret) {
+		dev_err(pcie->dev, "no PCIe EP device detected\n");
+		goto err_power_off_phy;
+	}
+
+	iproc_pcie_enable(pcie);
+
+	if (pcie->msi) {
+		//peter for test
+		/*
+		if (pcie->type == IPROC_PCIE_PAXC_V2)
+			iproc_msi_paxc_v2_enable(pcie->msi);
+		else
+		*/
+			iproc_msi_enable(pcie->msi);
+	}
+
+	return 0;
+
+err_power_off_phy:
+	phy_power_off(pcie->phy);
+err_exit_phy:
+	phy_exit(pcie->phy);
+	return ret;
+}
+EXPORT_SYMBOL(iproc_pcie_resume);
+
+int iproc_pcie_suspend(struct iproc_pcie *pcie)
+{
+	if (pcie->msi) {
+		//peter for test
+		/*
+		if (pcie->type == IPROC_PCIE_PAXC_V2)
+			iproc_msi_paxc_v2_disable(pcie->msi);
+		else
+		*/
+			iproc_msi_disable(pcie->msi);
+	}
+
+	if (pcie->phy) {
+		phy_power_off(pcie->phy);
+		phy_exit(pcie->phy);
+	}
+
+	return 0;
+}
+EXPORT_SYMBOL(iproc_pcie_suspend);
+
+/* FX 06/24/17 End */
 /**
  * FIXME
  * Hacky code to work around the ASIC issue with PAXC and Nitro

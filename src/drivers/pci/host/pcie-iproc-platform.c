@@ -133,11 +133,50 @@ static int iproc_pcie_pltfm_remove(struct platform_device *pdev)
 
 	return iproc_pcie_remove(pcie);
 }
+/* FX 06/24/17 Start */
+#ifdef CONFIG_PM
+static int iproc_pcie_pltfm_suspend(struct device *dev)
+{
+	struct platform_device *pdev = to_platform_device(dev);
+	struct iproc_pcie *pcie = platform_get_drvdata(pdev);
 
+	return iproc_pcie_suspend(pcie);
+}
+
+static int iproc_pcie_pltfm_resume(struct device *dev)
+{
+	struct platform_device *pdev = to_platform_device(dev);
+	struct device_node *np = pdev->dev.of_node;
+	struct iproc_pcie *pcie = platform_get_drvdata(pdev);
+	resource_size_t iobase = 0;
+	LIST_HEAD(res);
+	int ret;
+
+	ret = of_pci_get_host_bridge_resources(np, 0, 0xff, &res, &iobase);
+	if (ret) {
+		dev_err(pcie->dev,
+			"unable to get PCI host bridge resources\n");
+		return ret;
+	}
+
+	return iproc_pcie_resume(pcie, &res);
+}
+
+static const struct dev_pm_ops iproc_pcie_pltfm_pm_ops = {
+	.suspend_noirq = iproc_pcie_pltfm_suspend,
+	.resume_noirq = iproc_pcie_pltfm_resume
+};
+
+#define IPROC_PCIE_PLTFM_PM_OPS (&iproc_pcie_pltfm_pm_ops)
+#else
+#define IPROC_PCIE_PLTFM_PM_OPS NULL
+#endif /* CONFIG_PM */
+/* FX 06/24/17 End */
 static struct platform_driver iproc_pcie_pltfm_driver = {
 	.driver = {
 		.name = "iproc-pcie",
 		.of_match_table = of_match_ptr(iproc_pcie_of_match_table),
+		.pm = IPROC_PCIE_PLTFM_PM_OPS /* FX 06/24/17 */
 	},
 	.probe = iproc_pcie_pltfm_probe,
 	.remove = iproc_pcie_pltfm_remove,

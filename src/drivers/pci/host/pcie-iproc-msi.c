@@ -312,7 +312,7 @@ static inline u32 decode_msi_hwirq(struct iproc_msi *msi, u32 eq, u32 head)
 	return hwirq_to_canonical_hwirq(msi, hwirq);
 }
 
-static void iproc_msi_handler(struct irq_desc *desc)
+void iproc_msi_handler(struct irq_desc *desc) /* FX 06/24/17 */
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	struct iproc_msi_grp *grp;
@@ -379,7 +379,7 @@ static void iproc_msi_handler(struct irq_desc *desc)
 	chained_irq_exit(chip, desc);
 }
 
-static void iproc_msi_enable(struct iproc_msi *msi)
+void iproc_msi_enable(struct iproc_msi *msi) /*FX 06/24/17 */
 {
 	int i, eq;
 	u32 val;
@@ -421,8 +421,8 @@ static void iproc_msi_enable(struct iproc_msi *msi)
 		}
 	}
 }
-
-static void iproc_msi_disable(struct iproc_msi *msi)
+EXPORT_SYMBOL(iproc_msi_enable); /* FX 06/24/17 */
+void iproc_msi_disable(struct iproc_msi *msi) /* FX 06/24/17 */
 {
 	u32 eq, val;
 
@@ -439,7 +439,7 @@ static void iproc_msi_disable(struct iproc_msi *msi)
 		iproc_msi_write_reg(msi, IPROC_MSI_CTRL, eq, val);
 	}
 }
-
+EXPORT_SYMBOL(iproc_msi_disable); /* FX 06/24/17 */
 static int iproc_msi_alloc_domains(struct device_node *node,
 				   struct iproc_msi *msi)
 {

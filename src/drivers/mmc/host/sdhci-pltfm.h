@@ -23,6 +23,7 @@ struct sdhci_pltfm_data {
 
 struct sdhci_pltfm_host {
 	struct clk *clk;
+	void *priv; /* to handle quirks across io-accessor calls */ /* WR 5/23/2017 */
 
 	/* migrate from sdhci_of_host */
 	unsigned int clock;
@@ -108,7 +109,16 @@ static inline void *sdhci_pltfm_priv(struct sdhci_pltfm_host *host)
 {
 	return (void *)host->private;
 }
-
+/* WR 5/23/2017 Start */
+#ifdef CONFIG_PM
+extern int sdhci_pltfm_suspend(struct device *dev);
+extern int sdhci_pltfm_resume(struct device *dev);
+/* WR 5/23/2017 End */
 extern const struct dev_pm_ops sdhci_pltfm_pmops;
-
+/* WR 5/23/2017 Start */
+#define SDHCI_PLTFM_PMOPS (&sdhci_pltfm_pmops)
+#else
+#define SDHCI_PLTFM_PMOPS NULL
+#endif
+/* WR 5/23/2017 End */
 #endif /* _DRIVERS_MMC_SDHCI_PLTFM_H */

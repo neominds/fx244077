@@ -1,0 +1,2 @@
+config FX_SPI_CPLD
+        bool "FX CPLD Driver (for debug)"

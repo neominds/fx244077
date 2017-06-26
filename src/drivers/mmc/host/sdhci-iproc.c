@@ -42,6 +42,20 @@ struct sdhci_iproc_host {
 /* NS2 specific #defines */
 
 #define SDIO_IDM_IO_CONTROL_DIRECT_OFFSET 0x0
+/* WR 5/23/2017 Start	*/
+#define SDIO_IDM0_IO_CONTROL_DIRECT__ARCACHE_R 27
+#define SDIO_IDM0_IO_CONTROL_DIRECT__AWCACHE_R 23
+#define SDIO_IDM0_IO_CONTROL_DIRECT__CMD_COMFLICT_DISABLE_R 22
+#define SDIO_IDM0_IO_CONTROL_DIRECT__FEEDBACK_CLK_EN_R 21
+#define SDIO_IDM0_IO_CONTROL_DIRECT__TUNING_CMD_SUCCESS_CNT_R 17
+#define SDIO_IDM0_IO_CONTROL_DIRECT__OP_DELAY_CTRL_R 15
+#define SDIO_IDM0_IO_CONTROL_DIRECT__OP_TAP_DELAY_R 11
+#define SDIO_IDM0_IO_CONTROL_DIRECT__OP_TAP_EN_R 10
+#define SDIO_IDM0_IO_CONTROL_DIRECT__IP_DELAY_CTRL_R 8
+#define SDIO_IDM0_IO_CONTROL_DIRECT__IP_TAP_EN_R 7
+#define SDIO_IDM0_IO_CONTROL_DIRECT__IP_TAP_DELAY_R 1
+#define SDIO_IDM0_IO_CONTROL_DIRECT__clk_enable_R 0
+/* WR 5/23/2017 End	*/
 #define SDIO_IDM_RESET_CONTROL_OFFSET 0x3F8
 /* NS2 specific #defines */
 
@@ -56,8 +70,16 @@ static inline u32 sdhci_iproc_readl(struct sdhci_host *host, int reg)
 
 static u16 sdhci_iproc_readw(struct sdhci_host *host, int reg)
 {
-	u32 val = sdhci_iproc_readl(host, (reg & ~3));
-	u16 word = val >> REG_OFFSET_IN_BITS(reg) & 0xffff;
+/* WR 5/23/2017 Start	*/
+	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
+	struct sdhci_iproc_host *iproc_host = sdhci_pltfm_priv(pltfm_host);
+	u32 val, word;
+
+	val = iproc_host->is_cmd_shadowed ? iproc_host->shadow_cmd :
+			sdhci_iproc_readl(host, (reg & ~3));
+/* WR 5/23/2017 End	*/
+	word = val >> REG_OFFSET_IN_BITS(reg) & 0xffff;
+
 	return word;
 }
 
@@ -131,10 +153,12 @@ static void sdhci_iproc_writew(struct sdhci_host *host, u16 val, int reg)
 	if (reg == SDHCI_TRANSFER_MODE) {
 		/* Save the transfer mode until the command is issued */
 		iproc_host->shadow_cmd = newval;
+		iproc_host->is_cmd_shadowed = true; /* WR 5/23/2017 */
 	} else if (reg == SDHCI_BLOCK_SIZE || reg == SDHCI_BLOCK_COUNT) {
 		/* Save the block info until the command is issued */
 		iproc_host->shadow_blk = newval;
 	} else {
+		iproc_host->is_cmd_shadowed = false; /* WR 5/23/2017 */
 		/* Command or other regular 32-bit write */
 		sdhci_iproc_writel(host, newval, reg & ~3);
 	}
@@ -149,7 +173,21 @@ static void sdhci_iproc_writeb(struct sdhci_host *host, u8 val, int reg)
 
 	sdhci_iproc_writel(host, newval, reg & ~3);
 }
-
+/* WR 5/23/2017 Start */
+static const struct sdhci_ops sdhci_iproc_cygnus_ops = {
+	.read_l = sdhci_iproc_readl,
+	.read_w = sdhci_iproc_readw,
+	.read_b = sdhci_iproc_readb,
+	.write_l = sdhci_iproc_writel,
+	.write_w = sdhci_iproc_writew,
+	.write_b = sdhci_iproc_writeb,
+	.set_clock = sdhci_set_clock,
+	.get_max_clock = sdhci_pltfm_clk_get_max_clock,
+	.set_bus_width = sdhci_set_bus_width,
+	.reset = sdhci_reset,
+	.set_uhs_signaling = sdhci_set_uhs_signaling,
+};
+/* WR 5/23/2017 End */
 static const struct sdhci_ops sdhci_iproc_ns2_ops = {
 	.read_l = sdhci_iproc_readl,
 	.read_w = sdhci_iproc_readw,
@@ -163,13 +201,26 @@ static const struct sdhci_ops sdhci_iproc_ns2_ops = {
 	.reset = sdhci_reset,
 	.set_uhs_signaling = sdhci_set_uhs_signaling,
 };
-
+/* WR 5/23/2017 Start */
+static const struct sdhci_pltfm_data sdhci_iproc_cygnus_pltfm_data = {
+	.quirks = SDHCI_QUIRK_DATA_TIMEOUT_USES_SDCLK,
+	.quirks2 = SDHCI_QUIRK2_ACMD23_BROKEN,
+	.ops = &sdhci_iproc_cygnus_ops,
+};
+/* WR 5/23/2017 End */
 static const struct sdhci_pltfm_data sdhci_iproc_ns2_pltfm_data = {
 	.quirks = SDHCI_QUIRK_MULTIBLOCK_READ_ACMD12 | SDHCI_QUIRK_DATA_TIMEOUT_USES_SDCLK,
-	.quirks2 = SDHCI_QUIRK2_ACMD23_BROKEN,
+	.quirks2 = SDHCI_QUIRK2_ACMD23_BROKEN |
+		SDHCI_QUIRK2_NEED_DELAY_AFTER_INT_CLK_RST,
 	.ops = &sdhci_iproc_ns2_ops,
 };
-
+/* WR 5/23/2017 Start */
+static const struct sdhci_iproc_data iproc_cygnus_data = {
+	.pdata = &sdhci_iproc_cygnus_pltfm_data,
+	.caps = 0x05E90000,
+	.caps1 = 0x00000064,
+};
+/* WR 5/23/2017 End */
 static const struct sdhci_iproc_data iproc_ns2_data = {
 	.pdata = &sdhci_iproc_ns2_pltfm_data,
 	.caps = 0x05E90000,
@@ -191,24 +242,17 @@ static const struct sdhci_ops sdhci_iproc_ops = {
 };
 
 static const struct sdhci_pltfm_data sdhci_iproc_pltfm_data = {
-	.quirks = SDHCI_QUIRK_DATA_TIMEOUT_USES_SDCLK,
-	.quirks2 = SDHCI_QUIRK2_ACMD23_BROKEN,
+	.quirks = SDHCI_QUIRK_MULTIBLOCK_READ_ACMD12 |
+		  SDHCI_QUIRK_DATA_TIMEOUT_USES_SDCLK,
+	.quirks2 = SDHCI_QUIRK2_ACMD23_BROKEN |
+		SDHCI_QUIRK2_NEED_DELAY_AFTER_INT_CLK_RST,
 	.ops = &sdhci_iproc_ops,
 };
 
 static const struct sdhci_iproc_data iproc_data = {
 	.pdata = &sdhci_iproc_pltfm_data,
-	.caps = ((0x1 << SDHCI_MAX_BLOCK_SHIFT)
-			& SDHCI_MAX_BLOCK_MASK) |
-		SDHCI_CAN_VDD_330 |
-		SDHCI_CAN_VDD_180 |
-		SDHCI_CAN_DO_SUSPEND |
-		SDHCI_CAN_DO_HISPD |
-		SDHCI_CAN_DO_ADMA2 |
-		SDHCI_CAN_DO_SDMA,
-	.caps1 = SDHCI_DRIVER_TYPE_C |
-		 SDHCI_DRIVER_TYPE_D |
-		 SDHCI_SUPPORT_DDR50,
+	.caps = 0x05E90000,
+	.caps1 = 0x00000064,
 	.mmc_caps = MMC_CAP_1_8V_DDR,
 };
 
@@ -228,12 +272,29 @@ static const struct sdhci_iproc_data bcm2835_data = {
 
 static const struct of_device_id sdhci_iproc_of_match[] = {
 	{ .compatible = "brcm,bcm2835-sdhci", .data = &bcm2835_data },
-	{ .compatible = "brcm,sdhci-iproc-cygnus", .data = &iproc_data },
+	{ .compatible = "brcm,sdhci-iproc-cygnus", .data = &iproc_cygnus_data },
 	{ .compatible = "brcm,sdhci-iproc-ns2", .data = &iproc_ns2_data },
+	{ .compatible = "brcm,sdhci-iproc", .data = &iproc_data },
 	{ }
 };
 MODULE_DEVICE_TABLE(of, sdhci_iproc_of_match);
 
+/* WR 5/23/2017 Start */
+/* Initial value for the MMC/SD IDM_IO_CONTROL_DIRECT registers */
+/* We use the existing setting for AxCACHE, so not specified here */
+#define SDIO_IDM_IO_CONTROL_DIRECT_SETTING \
+	((0 << SDIO_IDM0_IO_CONTROL_DIRECT__CMD_COMFLICT_DISABLE_R) | \
+	 (1 << SDIO_IDM0_IO_CONTROL_DIRECT__FEEDBACK_CLK_EN_R) |  \
+	 (0 << SDIO_IDM0_IO_CONTROL_DIRECT__TUNING_CMD_SUCCESS_CNT_R) | \
+	 (0 << SDIO_IDM0_IO_CONTROL_DIRECT__OP_DELAY_CTRL_R) | \
+	 (0xB << SDIO_IDM0_IO_CONTROL_DIRECT__OP_TAP_DELAY_R) | \
+	 (1 << SDIO_IDM0_IO_CONTROL_DIRECT__OP_TAP_EN_R) | \
+	 (0 << SDIO_IDM0_IO_CONTROL_DIRECT__IP_DELAY_CTRL_R) | \
+	 (1 << SDIO_IDM0_IO_CONTROL_DIRECT__IP_TAP_EN_R) | \
+	 (0x02 << SDIO_IDM0_IO_CONTROL_DIRECT__IP_TAP_DELAY_R) | \
+	 (1 << SDIO_IDM0_IO_CONTROL_DIRECT__clk_enable_R))
+
+/* WR 5/23/2017 End */
 static int sdhci_iproc_probe(struct platform_device *pdev)
 {
 	const struct of_device_id *match;
@@ -244,6 +305,7 @@ static int sdhci_iproc_probe(struct platform_device *pdev)
 	int ret;
 	struct device *dev = &pdev->dev;
 	struct device_node *np = dev->of_node;
+	u32 reg;
 
 	match = of_match_device(sdhci_iproc_of_match, &pdev->dev);
 	if (!match)
@@ -258,6 +320,7 @@ static int sdhci_iproc_probe(struct platform_device *pdev)
 	iproc_host = sdhci_pltfm_priv(pltfm_host);
 
 	iproc_host->data = iproc_data;
+	iproc_host->is_cmd_shadowed = false; /* WR 5/23/2017 */
 
 	mmc_of_parse(host->mmc);
 	sdhci_get_of_property(pdev);
@@ -290,9 +353,16 @@ static int sdhci_iproc_probe(struct platform_device *pdev)
 			ret = -ENOMEM;
 			goto err;
 		}
-
-		writel(0x00201401, iproc_host->idm_io_control +
+/* WR 5/23/2017 Start */
+		/* preserve AxCACHE while enabling */
+		reg = readl(iproc_host->idm_io_control +
 				   SDIO_IDM_IO_CONTROL_DIRECT_OFFSET);
+		reg &= ((0xF << SDIO_IDM0_IO_CONTROL_DIRECT__ARCACHE_R) |
+			(0xF << SDIO_IDM0_IO_CONTROL_DIRECT__AWCACHE_R));
+		writel(SDIO_IDM_IO_CONTROL_DIRECT_SETTING | reg,
+		       iproc_host->idm_io_control +
+		       SDIO_IDM_IO_CONTROL_DIRECT_OFFSET);
+/* WR 5/23/2017 End */
 
 		/* Reset SDIO device */
 		writel(0x1, iproc_host->idm_io_control +
@@ -322,7 +392,7 @@ static struct platform_driver sdhci_iproc_driver = {
 	.driver = {
 		.name = "sdhci-iproc",
 		.of_match_table = sdhci_iproc_of_match,
-		.pm = &sdhci_pltfm_pmops,
+		.pm = SDHCI_PLTFM_PMOPS, /* WR 5/23/2017 */
 	},
 	.probe = sdhci_iproc_probe,
 	.remove = sdhci_pltfm_unregister,

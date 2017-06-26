@@ -1,0 +1,11 @@
+menuconfig FXMODULE
+	bool "FX Module support"
+	---help---
+	  Say Y here to get support for the fxmodule.
+
+if FXMODULE
+
+# for Debug
+source "drivers/fxmodule/cpld-spi/Kconfig"
+
+endif

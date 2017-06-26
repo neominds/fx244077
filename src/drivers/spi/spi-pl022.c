@@ -402,7 +402,9 @@ struct pl022 {
 	bool				dma_running;
 #endif
 	int cur_cs;
+	int cur_cs_invert;
 	int *chipselects;
+	int *cs_inverts;
 };
 
 /**
@@ -470,6 +472,8 @@ static void internal_cs_control(struct pl022 *pl022, u32 command)
 
 static void pl022_cs_control(struct pl022 *pl022, u32 command)
 {
+	if (pl022->cur_cs_invert)
+		command = !command;
 	if (pl022->vendor->internal_cs_ctrl)
 		internal_cs_control(pl022, command);
 	else if (gpio_is_valid(pl022->cur_cs))
@@ -1577,6 +1581,7 @@ static int pl022_transfer_one_message(struct spi_master *master,
 	/* Setup the SPI using the per chip configuration */
 	pl022->cur_chip = spi_get_ctldata(msg->spi);
 	pl022->cur_cs = pl022->chipselects[msg->spi->chip_select];
+	pl022->cur_cs_invert = pl022->cs_inverts[msg->spi->chip_select];
 
 	restore_state(pl022);
 	flush(pl022);
@@ -2142,6 +2147,13 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 		goto err_no_mem;
 	}
 
+	pl022->cs_inverts = devm_kzalloc(dev, num_cs * sizeof(int),
+					  GFP_KERNEL);
+	if (!pl022->chipselects) {
+		status = -ENOMEM;
+		goto err_no_mem;
+	}
+
 	/*
 	 * Bus Number Which has been Assigned to this SSP controller
 	 * on this board
@@ -2164,7 +2176,8 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 			pl022->chipselects[i] = i;
 	} else if (IS_ENABLED(CONFIG_OF)) {
 		for (i = 0; i < num_cs; i++) {
-			int cs_gpio = of_get_named_gpio(np, "cs-gpios", i);
+			enum of_gpio_flags of_flags;
+			int cs_gpio = of_get_named_gpio_flags(np, "cs-gpios", i, &of_flags);
 
 			if (cs_gpio == -EPROBE_DEFER) {
 				status = -EPROBE_DEFER;
@@ -2172,6 +2185,7 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 			}
 
 			pl022->chipselects[i] = cs_gpio;
+			pl022->cs_inverts[i] = !!(of_flags & OF_GPIO_ACTIVE_LOW);
 
 			if (gpio_is_valid(cs_gpio)) {
 				if (devm_gpio_request(dev, cs_gpio, "ssp-pl022"))

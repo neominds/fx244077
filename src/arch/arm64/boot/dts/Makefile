@@ -19,6 +19,7 @@ dts-dirs += socionext
 dts-dirs += sprd
 dts-dirs += xilinx
 dts-dirs += lg
+dts-dirs += fx
 
 subdir-y	:= $(dts-dirs)
 

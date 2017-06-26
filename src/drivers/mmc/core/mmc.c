@@ -732,7 +732,109 @@ static int mmc_compare_ext_csds(struct mmc_card *card, unsigned bus_width)
 	kfree(bw_ext_csd);
 	return err;
 }
+/* WR 6/5/2017 Start */
+#ifdef CONFIG_MMC_LOCK
+ssize_t mmc_lock_show(struct device *dev, struct device_attribute *att,
+			char *buf)
+{
+	struct mmc_card *card = mmc_dev_to_card(dev);
+	if (!mmc_card_lockable(card))
+		return sprintf(buf, "unsupported\n");
+	else
+		return sprintf(buf, "%slocked\n", mmc_card_locked(card) ?
+			"" : "un");
+}
 
+static struct lock_cmd {
+	const char *name;
+	int io_cmd;
+	int locked_required;
+	int need_pw;
+} lock_cmds[] = {
+	{ "erase" , MMC_LOCK_MODE_ERASE,  true,  false },
+	{ "clrpw", MMC_LOCK_MODE_CLR_PWD, false, true },
+	{ "setpw", MMC_LOCK_MODE_SET_PWD, false, true },
+	{ "lock", MMC_LOCK_MODE_LOCK, false,  true },
+	{ "unlock", MMC_LOCK_MODE_UNLOCK, true,  true },
+};
+
+/*
+ * implement MMC password functions: force erase, set password,
+ * clear password, lock and unlock.
+ */
+ssize_t mmc_lock_store(struct device *dev, struct device_attribute *att,
+			const char *data, size_t len)
+{
+	struct mmc_card *card = mmc_dev_to_card(dev);
+	int res = -EINVAL;
+	int x;
+	struct mmc_password password;
+        char buf[100];        
+
+	mmc_claim_host(card->host);
+	if (!mmc_card_lockable(card))
+		goto out;
+	for (x = 0; x < ARRAY_SIZE(lock_cmds); x++) {
+		if (sysfs_streq(data, lock_cmds[x].name))
+			break;
+	}
+	if (x >= ARRAY_SIZE(lock_cmds))
+		goto out;
+
+	if ((lock_cmds[x].locked_required && !mmc_card_locked(card)) ||
+	   (!lock_cmds[x].locked_required && mmc_card_locked(card))) {
+		dev_warn(dev, "%s requires %slocked card\n",
+			lock_cmds[x].name,
+			lock_cmds[x].locked_required ? "" : "un");
+		goto out;
+	}
+	if (lock_cmds[x].need_pw) {
+		res = mmc_get_password(card, &password);
+		if (res)
+			goto out;
+	}
+	res = mmc_lock_unlock(card, &password, lock_cmds[x].io_cmd);
+out:
+	mmc_release_host(card->host);
+	if (res == 0)
+		return len;
+	else
+		return res;
+}
+
+static ssize_t mmc_unlock_retry_store(struct device *dev,
+				      struct device_attribute *att,
+				      const char *data, size_t len)
+{
+	struct mmc_card *card = mmc_dev_to_card(dev);
+	struct mmc_host *host = card->host;
+	int err;
+
+	BUG_ON(!card);
+	BUG_ON(!host);
+
+	mmc_claim_host(host);
+	if (!mmc_card_locked(card)) {
+		mmc_release_host(host);
+		return len;
+	}
+	err = mmc_unlock_card(card);
+	mmc_release_host(host);
+	if (err < 0)
+		return err;
+	device_release_driver(dev);
+	err = device_attach(dev);
+	if (err < 0)
+		return err;
+	return len;
+}
+
+static DEVICE_ATTR(lock, S_IWUSR | S_IRUGO,
+                  mmc_lock_show, mmc_lock_store);
+static DEVICE_ATTR(unlock_retry, S_IWUSR,
+                  NULL, mmc_unlock_retry_store);
+#endif /* CONFIG_MMC_LOCK */
+/* WR 6/5/2017 End */
 MMC_DEV_ATTR(cid, "%08x%08x%08x%08x\n", card->raw_cid[0], card->raw_cid[1],
 	card->raw_cid[2], card->raw_cid[3]);
 MMC_DEV_ATTR(csd, "%08x%08x%08x%08x\n", card->raw_csd[0], card->raw_csd[1],
@@ -806,7 +908,13 @@ static struct attribute *mmc_std_attrs[] = {
 	&dev_attr_rel_sectors.attr,
 	&dev_attr_ocr.attr,
 	&dev_attr_dsr.attr,
-	NULL,
+/* WR 6/5/2017 Start */
+	#ifdef CONFIG_MMC_LOCK  
+	&dev_attr_lock.attr,
+	&dev_attr_unlock_retry.attr,
+        #endif /* CONFIG_MMC_LOCK */
+/* WR 6/5/2017 End */
+        NULL,
 };
 ATTRIBUTE_GROUPS(mmc_std);
 
@@ -1476,6 +1584,7 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 	int err;
 	u32 cid[4];
 	u32 rocr;
+        u32 status; /* WR 6/5/2017 */
 
 	BUG_ON(!host);
 	WARN_ON(!host->claimed);
@@ -1766,7 +1875,20 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 			card->ext_csd.packed_event_en = 1;
 		}
 	}
-
+/* WR 6/5/2017 Start */
+	/* If card is locked, try to unlock it */
+	err = mmc_send_status(card, &status);
+	if (err)
+		goto free_card;
+	if (status & R1_CARD_IS_LOCKED) {
+		pr_info("%s: card is locked.\n", mmc_hostname(card->host));
+		err = mmc_unlock_card(card);
+		if (err != 0) {
+			pr_warn("%s: Card unlock failed.\n",
+				mmc_hostname(card->host));
+		}
+	}
+/* WR 6/5/2017 End */
 	if (!oldcard)
 		host->card = card;
 

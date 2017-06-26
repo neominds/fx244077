@@ -535,7 +535,8 @@ static struct pci_ops iproc_pcie_ops = {
 static void iproc_pcie_reset(struct iproc_pcie *pcie)
 {
 	u32 val;
-
+	//peter for test /* FX 6/5/2017 */
+	u32 link_sts;  /* FX 6/5/2017 */
 	/*
 	 * PAXC and the internal emulated endpoint device downstream should not
 	 * be reset.  If firmware has been loaded on the endpoint device at an
@@ -549,6 +550,7 @@ static void iproc_pcie_reset(struct iproc_pcie *pcie)
 	 * and then bring it out of reset
 	 */
 	val = iproc_pcie_read_reg(pcie, IPROC_PCIE_CLK_CTRL);
+#if 0 /* FX 6/5/2017 */  
 	val &= ~EP_PERST_SOURCE_SELECT & ~EP_MODE_SURVIVE_PERST &
 		~RC_PCIE_RST_OUTPUT;
 	iproc_pcie_write_reg(pcie, IPROC_PCIE_CLK_CTRL, val);
@@ -557,6 +559,23 @@ static void iproc_pcie_reset(struct iproc_pcie *pcie)
 	val |= RC_PCIE_RST_OUTPUT;
 	iproc_pcie_write_reg(pcie, IPROC_PCIE_CLK_CTRL, val);
 	msleep(100);
+/* FX 6/5/2017 Start */
+#else
+	//peter for test
+	link_sts = iproc_pcie_read_reg(pcie, IPROC_PCIE_LINK_STATUS);
+	dev_info(pcie->dev, "link status=0x%08x clk=0x%08x \n", link_sts, val);
+	if ((val != RC_PCIE_RST_OUTPUT) || !(link_sts & PCIE_PHYLINKUP) || !(link_sts & PCIE_DL_ACTIVE)) {
+		val &= ~EP_PERST_SOURCE_SELECT & ~EP_MODE_SURVIVE_PERST &
+			~RC_PCIE_RST_OUTPUT;
+		iproc_pcie_write_reg(pcie, IPROC_PCIE_CLK_CTRL, val);
+		udelay(250);
+
+		val |= RC_PCIE_RST_OUTPUT;
+		iproc_pcie_write_reg(pcie, IPROC_PCIE_CLK_CTRL, val);
+		msleep(100);
+	}
+#endif
+/* FX 6/5/2017 End */
 }
 
 static int iproc_pcie_check_link(struct iproc_pcie *pcie, struct pci_bus *bus)

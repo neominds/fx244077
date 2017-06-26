@@ -86,6 +86,20 @@ void mmc_remove_card_debugfs(struct mmc_card *card);
 
 void mmc_init_context_info(struct mmc_host *host);
 
+/* WR 6/5/2017 Start */
+/* Lock/Unlock functionality */
+#define MMC_PASSWORD_MAX 16
+struct mmc_password {
+	char password[MMC_PASSWORD_MAX];
+	int length;
+};
+int mmc_unlock_card(struct mmc_card *card);
+int mmc_get_password(struct mmc_card *card, struct mmc_password *password);
+ssize_t mmc_lock_show(struct device *dev, struct device_attribute *att,
+                      char *buf);
+ssize_t mmc_lock_store(struct device *dev, struct device_attribute *att,
+                       const char *data, size_t len);
+/* WR 6/5/2017 End */
 int mmc_execute_tuning(struct mmc_card *card);
 int mmc_hs200_to_hs400(struct mmc_card *card);
 int mmc_hs400_to_hs200(struct mmc_card *card);

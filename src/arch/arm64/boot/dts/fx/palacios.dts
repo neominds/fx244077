@@ -52,7 +52,7 @@
 
 	memory {
 		device_type = "memory";
-		reg = <0x000000000 0x80000000 0x00000000 0x40000000>;
+		reg = <0x000000000 0x80000000 0x00000002 0x00000000>;
 	};
 
 	pcie4: pcie@50020000 {
@@ -208,11 +208,11 @@
 	status = "ok";
 };
 
-#if 0
+#if 0 /* FX 5/24/2017 Start */
 &pcie8 {
 	status = "ok";
 };
-
+#endif /* FX 5/24/2017 End */
 &i2c0 {
 	status = "ok";
 };
@@ -254,7 +254,6 @@
 		};
 	};
 };
-#endif
 
 &uart0 {
 	status = "ok";

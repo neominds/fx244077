@@ -2156,7 +2156,14 @@ static int mmc_blk_issue_rq(struct mmc_queue *mq, struct request *req)
 	if (req && !mq->mqrq_prev->req)
 		/* claim host only for the first request */
 		mmc_get_card(card);
-
+/* WR 6/5/2017 Start */
+	if (mmc_card_locked(card)) {
+		if (req)
+			blk_end_request_all(req, 0);
+		ret = 0;
+		goto out;
+	}
+/* WR 6/5/2017 End */
 	ret = mmc_blk_part_switch(card, md);
 	if (ret) {
 		if (req) {
@@ -2279,6 +2286,16 @@ again:
 	if (area_type & (MMC_BLK_DATA_AREA_RPMB | MMC_BLK_DATA_AREA_BOOT))
 		md->disk->flags |= GENHD_FL_NO_PART_SCAN;
 
+/* WR 6/5/2017 Start */
+	/*
+	 * If the card is locked, reads will fail so prevent partition
+	 * table scan
+	 */
+	if (mmc_card_locked(card))
+		md->disk->flags |= GENHD_FL_NO_PART_SCAN;
+
+	
+/* WR 6/5/2017 End */
 	/*
 	 * As discussed on lkml, GENHD_FL_REMOVABLE should:
 	 *
@@ -2580,7 +2597,16 @@ static int mmc_blk_probe(struct mmc_card *card)
 {
 	struct mmc_blk_data *md, *part_md;
 	char cap_str[10];
-
+/* WR 6/5/2017 Start */
+	/* if the card is locked, don't bring up the block layer because
+	 * all reads and writes will fail.
+	 */
+	if (mmc_card_locked(card)) {
+		pr_debug("%s: %s - Probe aborted because card is locked\n",
+			mmc_hostname(card->host), __func__);
+		return -ENODEV;
+	}
+/* WR 6/5/2017 End */
 	/*
 	 * Check that the card supports the command class(es) we need.
 	 */

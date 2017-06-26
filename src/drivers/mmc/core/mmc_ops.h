@@ -11,6 +11,16 @@
 
 #ifndef _MMC_MMC_OPS_H
 #define _MMC_MMC_OPS_H
+/* WR 6/5/2017 Start */
+/*
+ * MMC_LOCK_UNLOCK modes
+ */
+#define MMC_LOCK_MODE_ERASE	(1<<3)
+#define MMC_LOCK_MODE_LOCK	(1<<2)
+#define MMC_LOCK_MODE_UNLOCK	(0<<2)
+#define MMC_LOCK_MODE_CLR_PWD	(1<<1)
+#define MMC_LOCK_MODE_SET_PWD	(1<<0)
+/* WR 6/5/2017 End */
 
 int mmc_select_card(struct mmc_card *card);
 int mmc_deselect_cards(struct mmc_host *host);
@@ -31,6 +41,10 @@ int mmc_switch_status_error(struct mmc_host *host, u32 status);
 int __mmc_switch(struct mmc_card *card, u8 set, u8 index, u8 value,
 		unsigned int timeout_ms, bool use_busy_signal, bool send_status,
 		bool ignore_crc);
-
+/* WR 6/5/2017 Start */
+#ifdef CONFIG_MMC_LOCK
+int mmc_lock_unlock(struct mmc_card *card, struct mmc_password *password,
+			int mode);
 #endif
-
+/* WR 6/5/2017 End */
+#endif

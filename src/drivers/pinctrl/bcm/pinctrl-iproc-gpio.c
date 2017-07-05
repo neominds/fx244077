@@ -36,6 +36,9 @@
 
 #include "../pinctrl-utils.h"
 
+#include <linux/of_gpio.h>/* WR 07/03/17 */
+#include <linux/gpio.h> /* WR 07/03/17 */
+
 #define IPROC_GPIO_DATA_IN_OFFSET   0x00
 #define IPROC_GPIO_DATA_OUT_OFFSET  0x04
 #define IPROC_GPIO_OUT_EN_OFFSET    0x08
@@ -66,6 +69,17 @@
 #define GPIO_DRV_STRENGTH_BITS       3
 #define GPIO_DRV_STRENGTH_BIT_MASK   ((1 << GPIO_DRV_STRENGTH_BITS) - 1)
 
+
+/* WR 07/03/17 Start */
+#undef WR_DEBUG
+void __iomem *wr_regs[2];
+u32 wr_gpio_read[2];
+u32 wr_gpio_status[2];
+void wr_gpio_reg_read(void);
+/* WR 07/03/17 End */
+
+
+
 enum iproc_pinconf_param {
 	IPROC_PINCONF_DRIVE_STRENGTH = 0,
 	IPROC_PINCONF_BIAS_DISABLE,
@@ -74,6 +88,7 @@ enum iproc_pinconf_param {
 	IPROC_PINCON_MAX,
 };
 
+extern void wr_gpio_reg_read(void);
 /*
  * Iproc GPIO core
  *
@@ -732,7 +747,13 @@ static int iproc_gpio_probe(struct platform_device *pdev)
 	u32 ngpios, pinconf_disable_mask = 0;
 	int irq, ret;
 	bool no_pinconf = false;
-
+	
+	/*WR 07/03/17 Start*/
+	wr_regs[0] = ioremap(0x660a0004,4);
+        wr_regs[1] = ioremap(0x660a0008,4);
+        wr_gpio_reg_read();
+	/* WR 07/03/17 End */
+	
 	/* NSP does not support drive strength config */
 	if (of_device_is_compatible(dev->of_node, "brcm,iproc-nsp-gpio"))
 		pinconf_disable_mask = BIT(IPROC_PINCONF_DRIVE_STRENGTH);
@@ -833,11 +854,49 @@ err_rm_gpiochip:
 
 	return ret;
 }
+/* WR 07/04/17 Start */
 
+void wr_gpio_reg_read(void)
+{
+        /* Save the GPIO register values to the Global variable*/
+         wr_gpio_read[0] = readl(wr_regs[0]);
+         wr_gpio_read[1] = readl(wr_regs[1]);
+         wr_gpio_status[0] = wr_gpio_read[0];
+         wr_gpio_status[1] = wr_gpio_read[1];
+#ifdef WR_DEBUG
+         pr_info("0x660a0004 = %#x\n",wr_gpio_read[0]);
+         pr_info("0x660a0008 = %#x\n",wr_gpio_read[1]);
+#endif
+}
+EXPORT_SYMBOL_GPL(wr_gpio_reg_read);
+
+
+#ifdef CONFIG_PM_SLEEP
+static int iproc_gpio_pltfm_suspend(struct device *dev)
+{
+	wr_gpio_reg_read();
+	return 0;
+}
+static int iproc_gpio_pltfm_resume(struct device *dev)
+{
+
+	 writel(wr_gpio_status[0],wr_regs[0]);
+         writel(wr_gpio_status[1],wr_regs[1]);
+	
+	 //wr_gpio_reg_read();
+	return 0;
+}
+static const struct dev_pm_ops iproc_gpio_pltfm_pm_ops = {
+	.suspend = iproc_gpio_pltfm_suspend,
+	.resume = iproc_gpio_pltfm_resume
+};
+#endif
+/* WR 07/04/17 End */
 static struct platform_driver iproc_gpio_driver = {
 	.driver = {
 		.name = "iproc-gpio",
 		.of_match_table = iproc_gpio_of_match,
+		.pm = &iproc_gpio_pltfm_pm_ops /* WR 07/04/17 */
 	},
 	.probe = iproc_gpio_probe,
 };

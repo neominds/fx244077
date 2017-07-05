@@ -26,17 +26,7 @@
 #include <linux/pm_runtime.h>
 #include <linux/of_platform.h>
 #include "ahci.h"
-#include <linux/of_gpio.h>/* WR 07/03/17 */
-#include <linux/gpio.h> /* WR 07/03/17 */
 
-
-/* WR 07/03/17 Start */
-#undef WR_DEBUG
-void __iomem *wr_regs[2];
-u32 wr_gpio_read[2];
-u32 wr_gpio_status[2];
-static void wr_gpio_reg_read(void);
-/* WR 07/03/17 End */
 static void ahci_host_stop(struct ata_host *host);
 
 struct ata_port_operations ahci_platform_ops = {
@@ -521,12 +511,7 @@ int ahci_platform_init_host(struct platform_device *pdev,
 	const struct ata_port_info *ppi[] = { &pi, NULL };
 	struct ata_host *host;
 	int i, irq, n_ports, rc;
-/*WR 07/03/17 Start*/
-	//map the phy addr to virt addr HDD power pin is on GPIO16
-	wr_regs[0] = ioremap(0x660a0004,4);
-	wr_regs[1] = ioremap(0x660a0008,4);
-	wr_gpio_reg_read();
-/* WR 07/03/17 End */
+
 	irq = platform_get_irq(pdev, 0);
 	if (irq <= 0) {
 		dev_err(dev, "no irq\n");
@@ -609,21 +594,6 @@ int ahci_platform_init_host(struct platform_device *pdev,
 }
 EXPORT_SYMBOL_GPL(ahci_platform_init_host);
 
-/* WR 07/03/17 Start */
-static void wr_gpio_reg_read(void)
-{
-	/* Save the GPIO register values to the Global variable*/
-	 wr_gpio_read[0] = readl(wr_regs[0]);
-	 wr_gpio_read[1] = readl(wr_regs[1]);
-	 wr_gpio_status[0] = wr_gpio_read[0];
-	 wr_gpio_status[1] = wr_gpio_read[1];
-#ifdef WR_DEBUG
-	 pr_info("0x660a0004 = %#x\n",wr_gpio_read[0]);
-         pr_info("0x660a0008 = %#x\n",wr_gpio_read[1]);
-#endif
-}
-/* WR 07/03/17 End */
-
 static void ahci_host_stop(struct ata_host *host)
 {
 	struct ahci_host_priv *hpriv = host->private_data;
@@ -649,6 +619,7 @@ int ahci_platform_suspend_host(struct device *dev)
 	struct ahci_host_priv *hpriv = host->private_data;
 	void __iomem *mmio = hpriv->mmio;
 	u32 ctl;
+
 	if (hpriv->flags & AHCI_HFLAG_NO_SUSPEND) {
 		dev_err(dev, "firmware update required for suspend/resume\n");
 		return -EIO;
@@ -664,7 +635,6 @@ int ahci_platform_suspend_host(struct device *dev)
 	writel(ctl, mmio + HOST_CTL);
 	readl(mmio + HOST_CTL); /* flush */
 
-	wr_gpio_reg_read();/* WR 07/03/17 */
 	return ata_host_suspend(host, PMSG_SUSPEND);
 }
 EXPORT_SYMBOL_GPL(ahci_platform_suspend_host);
@@ -684,27 +654,7 @@ int ahci_platform_resume_host(struct device *dev)
 {
 	struct ata_host *host = dev_get_drvdata(dev);
 	int rc;
-/* WR 07/03/17 Start*/
-       
-	/* Check the status of the pin 16 of the GPIO reg if enabled before
-	* suspend then enable it after suspend too other wise leave as it is. 
-	*/
-	if ((wr_gpio_status[0] & (1<<16)) && (wr_gpio_status[1] & (1<<16)))
-	{
-		writel(wr_gpio_status[0],wr_regs[0]);
-		writel(wr_gpio_status[1],wr_regs[1]);
-	}
-	else
-	{
-	#ifdef WR_DEBUG
-		printk("GPIO is OFF");
-	#endif
-	}
-	#ifdef WR_DEBUG
-	wr_gpio_reg_read();
-	#endif
 
-/* WR 07/03/17 End */
 	if (dev->power.power_state.event == PM_EVENT_SUSPEND) {
 		rc = ahci_reset_controller(host);
 		if (rc)
@@ -735,14 +685,12 @@ int ahci_platform_suspend(struct device *dev)
 	struct ahci_host_priv *hpriv = host->private_data;
 	int rc;
 
-	printk("WR debug %s %d\n",__FUNCTION__,__LINE__);
 	rc = ahci_platform_suspend_host(dev);
 	if (rc)
 		return rc;
 
 	ahci_platform_disable_resources(hpriv);
 
-	printk("WR debug %s %d\n",__FUNCTION__,__LINE__);
 	return 0;
 }
 EXPORT_SYMBOL_GPL(ahci_platform_suspend);
@@ -763,7 +711,6 @@ int ahci_platform_resume(struct device *dev)
 	struct ahci_host_priv *hpriv = host->private_data;
 	int rc;
 
-	printk("WR debug %s %d\n",__FUNCTION__,__LINE__);
 	rc = ahci_platform_enable_resources(hpriv);
 	if (rc)
 		return rc;
@@ -777,7 +724,6 @@ int ahci_platform_resume(struct device *dev)
 	pm_runtime_set_active(dev);
 	pm_runtime_enable(dev);
 
-	printk("WR debug %s %d\n",__FUNCTION__,__LINE__);
 	return 0;
 
 disable_resources:

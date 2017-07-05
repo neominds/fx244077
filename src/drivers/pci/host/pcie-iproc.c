@@ -561,7 +561,7 @@ static void iproc_pcie_reset(struct iproc_pcie *pcie)
 
 		val |= RC_PCIE_RST_OUTPUT;
 		iproc_pcie_write_reg(pcie, IPROC_PCIE_CLK_CTRL, val);
-		msleep(50);
+		msleep(1000);
 	}
 /* FX 6/5/2017 End */
 }

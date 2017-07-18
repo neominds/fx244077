@@ -339,7 +339,7 @@
 		groups = "uart0_rts_cts_grp", "uart0_in_out_grp";
 	};
 };
-
+#if 0 /* WR 07/05/17 */
 &ohci0 {
 	status = "ok";
 };
@@ -351,7 +351,7 @@
 &ohci2 {
 	status = "ok";
 };
-
+#endif /* WR 07/05/17 */
 &sata_phy0 {
 	status = "ok";
 };
@@ -481,7 +481,7 @@
 	status = "ok";
 };
 #endif
-
+#if 0 /* WR 07/05/17 */
 &usb3_phy0 {
 	status = "ok";
 };
@@ -497,3 +497,4 @@
 &xhci1 {
 	status = "ok";
 };
+#endif /* WR 07/05/17 */

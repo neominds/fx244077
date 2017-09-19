@@ -54,12 +54,9 @@ Plan:
 	PM shutdown steps(https://www.slideshare.net/linaroorg/idling-ar-msinabusyworld)
 		1. save per CPU peripherals 
 		2. save CPU resigter
-		3. clean L1 D  -- To be checked
-		4. clean state from L2 -- To be checked
-		5. Disable L1 allocation -- To be checked
-		6. clean L1 D -- To be checked
-		7. exit coherency -- To be checked
-		8. call wfi 
+		3  check L1 cache cleanup
+		4. exit coherency -- To be checked
+		5. call wfi 
 		
 	- check CPU wake-up sequence during resume for possible out of sync with cache operations
 
@@ -70,14 +67,65 @@ Plan:
 	- Investigated exception vectors and code changes from WR product team.
 	  Currently checking possibility of restoring pre-exception state during suspend-resume without causing panic(). 
 
-		1. Disabled the bad_mode call from el1_inv, still bad mode occures.
-		2. Disabled the panic() from the bad_mode function(traps.c), still the kernel crashes
-			Bad mode in Error handler detected on CPU0, code 0xbf000002 -- SError
-			BUG: sleeping function called from invalid context at /media/jbabu/Browser_downl
-			oad/testR05/build/tmp/work-shared/fx-palacios/kernel-source/arch/arm64/mm/fault.
-			c:346
-			in_atomic(): 0, irqs_disabled(): 128, pid: 370, name: rsyslogd
- 		
+		1. Exception vectors.
+
+ENTRY(vectors)
+	ventry	el1_sync_invalid		// Synchronous EL1t
+	ventry	el1_irq_invalid			// IRQ EL1t
+	ventry	el1_fiq_invalid			// FIQ EL1t
+	ventry	el1_error_invalid		// Error EL1t
+
+	ventry	el1_sync			// Synchronous EL1h
+	ventry	el1_irq				// IRQ EL1h
+	ventry	el1_fiq_invalid			// FIQ EL1h
+	ventry	el1_error_invalid		// Error EL1h
+
+	ventry	el0_sync			// Synchronous 64-bit EL0
+	ventry	el0_irq				// IRQ 64-bit EL0
+	ventry	el0_fiq_invalid			// FIQ 64-bit EL0
+	ventry	el0_error_invalid		// Error 64-bit EL0
+
+#ifdef CONFIG_COMPAT
+	ventry	el0_sync_compat			// Synchronous 32-bit EL0
+	ventry	el0_irq_compat			// IRQ 32-bit EL0
+	ventry	el0_fiq_invalid_compat		// FIQ 32-bit EL0
+	ventry	el0_error_invalid_compat	// Error 32-bit EL0
+#else
+	ventry	el0_sync_invalid		// Synchronous 32-bit EL0
+	ventry	el0_irq_invalid			// IRQ 32-bit EL0
+	ventry	el0_fiq_invalid			// FIQ 32-bit EL0
+	ventry	el0_error_invalid		// Error 32-bit EL0
+#endif
+END(vectors)
+
+	Handlers:- 
+
+		EL0 mode handlers:-
+		
+	el0_inv:
+	enable_dbg
+	ct_user_exit
+	mov	x0, sp
+	mov	x1, #BAD_SYNC
+	mov	x2, x25
+	bl	bad_el0_sync  // WR COUSTOMER SUPPORT
+	b	ret_to_user
+
+
+		EL1 mode handlers:-
+	
+	el1_inv:
+	// TODO: add support for undefined instructions in kernel mode
+	enable_dbg
+	mov	x0, sp
+	mov	x2, x1
+	mov	x1, #BAD_SYNC
+	b	bad_mode
+el1_error_invalid:
+//	inv_entry 1, BAD_ERROR
+ENDPROC(el1_error_invalid)
+
+
 
 	ANALYSIS:-  
 		The exception is triggerd after the power mangement resume is called.

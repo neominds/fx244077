@@ -67,6 +67,7 @@ Plan:
 	- Investigated exception vectors and code changes from WR product team.
 	  Currently checking possibility of restoring pre-exception state during suspend-resume without causing panic(). 
 
+CASE 1:-
 		1. Exception vectors.
 
 ENTRY(vectors)
@@ -132,7 +133,34 @@ ENDPROC(el1_error_invalid)
 		PM: resume of devices complete after 389.203 msecs -- o/p message from the linux PM core functions
 		Restarting tasks ... -- Here the kernel tries to restart the suspended tasks and during this restart 
 		one of the task creates exception. (It could be a system call to the kernel) 
-		
+	
+CASE 2:-
+	* Disabled the call to bad mode from el1_inv and invalid exception section in entry.S,
+	  pattern 1:- u-boot sata off->Linux up-> coff->suspend->resume ok->linux up -- No BadMode 
+	  pattern 2:- u-boot sata off->Linux up-> coff->suspend->resume ok->linux up -> sata on ->after access(read/write) sata off ->coff->suspend ok->resume NG-> BADMODE error observed
+	
+	Observed o/p:-
+	-------------
+		root@bcm-587xx:~# echo 1 > /sys/class/gpio/gpio490/value
+		root@bcm-587xx:~# ata1: exception Emask 0x10 SAct 0x0 SErr 0x4040000 action 0xe frozen
+		ata1: irq_stat 0x00000040, connection status changed
+		ata1: SError: { CommWake DevExch }
+		ata1: hard resetting link
+		ata1: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+		ata1.00: ATA-8: HGST HTS545025A7E330, GREOA340, max UDMA/133
+		ata1.00: 488397168 sectors, multi 16: LBA48 NCQ (depth 31/32)
+		ata1.00: configured for UDMA/133
+		ata1: EH complete
+		scsi 0:0:0:0: Direct-Access     ATA      HGST HTS545025A7 A340 PQ: 0 ANSI: 5
+		sd 0:0:0:0: [sda] 488397168 512-byte logical blocks: (250 GB/233 GiB)
+		sd 0:0:0:0: [sda] 4096-byte physical blocks
+		sd 0:0:0:0: [sda] Write Protect is off
+		sd 0:0:0:0: [sda] Mode Sense: 00 3a 00 00
+		sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+		 sda: sda1
+		sd 0:0:0:0: [sda] Attached SCSI disk
+
+	
 	C)
 	- continue investigation/debugging issue
 	- Investigate reason for platform_data not available to enable Quad-SPI mode in SPI driver

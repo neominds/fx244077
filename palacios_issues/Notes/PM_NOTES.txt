@@ -55,7 +55,7 @@ Plan:
 		1. save per CPU peripherals 
 		2. save CPU resigter
 		3  check L1 cache cleanup
-		4. exit coherency -- To be checked
+		4. exit coherency 
 		5. call wfi 
 		
 	- check CPU wake-up sequence during resume for possible out of sync with cache operations

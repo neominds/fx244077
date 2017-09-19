@@ -40,7 +40,9 @@ Plan:
 	Tried disableing the GBE 
 
 	- recheck if usb patch fixes bad mode issue in suspend-resume scenario (also received Image from Nakayama-san)
+
 	- check timers in device drivers for serial and SPI as potential candidate for bad mode issue
+
 	- check cache invalidate/evict inconsistency or possible delay during suspend-resume
 	cache management in WRLINUX9
 	arm common code mangement
@@ -52,16 +54,37 @@ Plan:
 	PM shutdown steps(https://www.slideshare.net/linaroorg/idling-ar-msinabusyworld)
 		1. save per CPU peripherals 
 		2. save CPU resigter
-		3. clean L1 D
-		4. clean state from L2
-		5. Disable L1 allocation
-		6. clean L1 D
-		7. exit coherency
+		3. clean L1 D  -- To be checked
+		4. clean state from L2 -- To be checked
+		5. Disable L1 allocation -- To be checked
+		6. clean L1 D -- To be checked
+		7. exit coherency -- To be checked
 		8. call wfi 
 		
 	- check CPU wake-up sequence during resume for possible out of sync with cache operations
+
 	- Try to identify task/thread causing exception during resume
+
 	- compare resume activity sequence in kernel with baud rates 38400 and 115200
+
+	- Investigated exception vectors and code changes from WR product team.
+	  Currently checking possibility of restoring pre-exception state during suspend-resume without causing panic(). 
+
+		1. Disabled the call from el1_inv, still bad mode occures.
+		2. Disabled the panic() from the bad_mode function, still the kernel crashes
+			Bad mode in Error handler detected on CPU0, code 0xbf000002 -- SError
+			BUG: sleeping function called from invalid context at /media/jbabu/Browser_downl
+			oad/testR05/build/tmp/work-shared/fx-palacios/kernel-source/arch/arm64/mm/fault.
+			c:346
+			in_atomic(): 0, irqs_disabled(): 128, pid: 370, name: rsyslogd
+ 
+
+	ANALYSIS:-  
+		The exception is triggerd after the power mangement resume is called.
+		PM: resume of devices complete after 389.203 msecs -- o/p message from the linux PM core functions
+		Restarting tasks ... -- Here the kernel tries to restart the suspended tasks and during this restart 
+		one of the task creates exception. (It could be a system call to the kernel) 
+		
 	C)
 	- continue investigation/debugging issue
 	- Investigate reason for platform_data not available to enable Quad-SPI mode in SPI driver

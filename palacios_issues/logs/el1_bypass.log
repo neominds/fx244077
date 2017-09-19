@@ -1,0 +1,965 @@
+INFO:    Free_base: 0x65139bb0, Free_size: 0x65139bb8, addr: 0x85000000, size: 0
+x61650
+INFO:    Image id=5 loaded at address 0x85000000, size = 0x61650
+NOTICE:  BL1: Booting BL31
+INFO:    Entry point address = 0x651e0000
+INFO:    SPSR = 0x3cd
+(NOTICE:  BL31: v1.2(debug):5f35f19
+NOTICE:  BL31: Built : 15:00:17, Jun 16 2017
+INFO:    ARM GICv2 driver initialized
+INFO:    BL31: Initializing runtime services
+INFO:    oem service (v0.1) init.
+INFO:    BL31: Initializing BL32
+OP-TEE: console_init
+INF [0x0] TEE-CORE:init_primary_helper:329: Initializing (1.1.0-125-g44b4801 #1 
+Fri Apr 14 09:19:38 UTC 2017 aarch64)
+
+INF [0x0] TEE-CORE:init_teecore:83: teecore inits done
+DBG [0x0] TEE-CORE:init_primary_helper:341: Primary CPU switching to normal worl
+d boot
+
+INFO:    BL31: Preparing for EL3 exit to normal world
+INFO:    Entry point address = 0x85000000
+INFO:    SPSR = 0x3c9(
+
+U-Boot 2016.05-LDK-5.0.10 (Jun 16 2017 - 17:46:15 +0900) Broadcom Northstar2
+
+DRAM:  
+
+4 GiB
+MMC:   bcm-sdhci: 0, bcm-sdhci: 1
+cru_control : 262
+SF: Detected W25Q64DW with page size 256 Bytes, erase size 64 KiB, total 8 MiB
+PCIe Init
+PCIe slot 0 (c0,s0), bus 0
+PCIe slot 0 (c0,s0) bus 0..0
+PCIe slot 4 (c1,s0), bus 1
+PCIe slot 4 (c1,s0) bus 1..1
+PCIe slot 5 (c1,s1), bus 2
+Error -19 init slot 5
+PCIe slot 6 (c1,s2), bus 2
+Error -19 init slot 6
+PCIe slot 7 (c1,s3), bus 2
+PCIe slot 7 (c1,s3) bus 2..2
+Nitro 'slot'. bus 3
+In:    serial
+Out:   serial
+Err:   serial
+Enabling onboard SATA host
+set up port 0
+set up port 1
+SATA link 0 timeout.
+SATA link 1 timeout.
+AHCI 0001.0300 32 slots 2 ports 6 Gbps 0x3 impl SATA mode
+flags: 64bit ncq stag clo pmp fbss slum part 
+scanning bus for devices...
+Found 0 device(s).
+SCSI:  Net:   
+Config PCIe slot 7 RC mode memory window
+Config NIC memory base
+Config rtl8169 iobase to 0x48000000
+PCI device RTL8169#0: unknown chip version, assuming RTL-8169
+PCI device: TxConfig = 0x53200D00
+RTL8169#0
+
+
+Hit any key to stop autoboot: 30 29 28 27 26 25 24 23  0 
+u-boot> mw 660a0004 00010000
+u-boot> mw 660a0008 00010000
+u-boot> sspi 0:1 24 020333
+000000
+u-boot> tftpboot 90000000 uImage_el1_bypass
+Using RTL8169#0 device
+TFTP from server 192.168.2.244; our IP address is 192.168.2.99
+Filename 'uImage_el1_bypass'.
+Load address: 0x90000000
+Loading: *#################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 #################################################################
+	 ########################
+	 214.8 KiB/s
+done
+Bytes transferred = 12098624 (b89c40 hex)
+u-boot> tftpboot 84000000 palacios_el1_bypass.dtb
+Using RTL8169#0 device
+TFTP from server 192.168.2.244; our IP address is 192.168.2.99
+Filename 'palacios_el1_bypass.dtb'.
+Load address: 0x84000000
+Loading: *####
+	 195.3 KiB/s
+done
+Bytes transferred = 19612 (4c9c hex)
+u-boot> setenv bootargs "ignore_loglevel console=ttyS0,38400n8 maxcpus=4 root=/d
+ev/mmcblk0p2 rootwait no_console_suspend"
+u-boot> bootm 90000000 - 84000000
+## Booting kernel from Legacy Image at 90000000 ...
+   Image Name:   Linux-4.8.18-rt10-WR9.0.0.4_pree
+   Created:      2017-09-19   7:53:08 UTC
+   Image Type:   AArch64 Linux Kernel Image (uncompressed)
+   Data Size:    12098560 Bytes = 11.5 MiB
+   Load Address: 80080000
+   Entry Point:  80080000
+   Verifying Checksum ... OK
+## Flattened Device Tree blob at 84000000
+   Booting using the fdt blob at 0x84000000
+   Loading Kernel Image ... OK
+   Loading Device Tree to 00000000feb04000, end 00000000feb0bc9b ... OK
+
+Starting kernel ...
+
+INFO:    ns2_pwr_domain_on, cpu:1
+INFO:    Setting up GIC for secondary cores
+DBG TEE-CORE:generic_boot_cpu_on_handler:372: cpu 1: a0 0x0
+DBG TEE-CORE:init_secondary_helper:359: Secondary CPU Switching to normal world 
+boot
+
+INFO:    ns2_pwr_domain_on, cpu:2
+INFO:    Setting up GIC for secondary cores
+DBG TEE-CORE:generic_boot_cpu_on_handler:372: cpu 2: a0 0x0
+DBG TEE-CORE:init_secondary_helper:359: Secondary CPU Switching to normal world 
+boot
+
+INFO:    ns2_pwr_domain_on, cpu:3
+INFO:    Setting up GIC for secondary cores
+DBG TEE-CORE:generic_boot_cpu_on_handler:372: cpu 3: a0 0x0
+DBG TEE-CORE:init_secondary_helper:359: Secondary CPU Switching to normal world 
+boot
+
+Booting Linux on physical CPU 0x0
+Linux version 4.8.18-rt10-WR9.0.0.4_preempt-rt (jbabu@ip-172-31-28-22) (gcc vers
+ion 6.2.0 (GCC) ) #23 SMP PREEMPT RT Tue Sep 19 07:53:05 UTC 2017
+Boot CPU: AArch64 Processor [411fd073]
+debug: ignoring loglevel setting.
+efi: Getting EFI parameters from FDT:
+efi: UEFI not found.
+On node 0 totalpages: 1046784
+  DMA zone: 8192 pages used for memmap
+  DMA zone: 0 pages reserved
+  DMA zone: 522496 pages, LIFO batch:31
+  Normal zone: 8192 pages used for memmap
+  Normal zone: 524288 pages, LIFO batch:31
+psci: probing for conduit method from DT.
+psci: PSCIv1.0 detected in firmware.
+psci: Using standard PSCI v0.2 function IDs
+psci: Trusted OS migration not required
+percpu: Embedded 21 pages/cpu @ffffffc0fff44000 s46912 r8192 d30912 u86016
+pcpu-alloc: s46912 r8192 d30912 u86016 alloc=21*4096
+pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3 
+Detected PIPT I-cache on CPU0
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 1030400
+Kernel command line: ignore_loglevel console=ttyS0,38400n8 maxcpus=4 root=/dev/m
+mcblk0p2 rootwait no_console_suspend
+PID hash table entries: 4096 (order: 3, 32768 bytes)
+Dentry cache hash table entries: 524288 (order: 11, 8388608 bytes)
+Inode-cache hash table entries: 262144 (order: 9, 2097152 bytes)
+software IO TLB [mem 0xfab04000-0xfeb04000] (64MB) mapped at [ffffffc07ab04000-f
+fffffc07eb03fff]
+Memory: 4032304K/4187136K available (7932K kernel code, 871K rwdata, 2172K rodat
+a, 768K init, 466K bss, 154832K reserved, 0K cma-reserved)
+Virtual kernel memory layout:
+    modules : 0xffffff8000000000 - 0xffffff8008000000   (   128 MB)
+    vmalloc : 0xffffff8008000000 - 0xffffffbebfff0000   (   250 GB)
+      .text : 0xffffff8008080000 - 0xffffff8008840000   (  7936 KB)
+    .rodata : 0xffffff8008840000 - 0xffffff8008a70000   (  2240 KB)
+      .init : 0xffffff8008a70000 - 0xffffff8008b30000   (   768 KB)
+      .data : 0xffffff8008b30000 - 0xffffff8008c09c00   (   871 KB)
+       .bss : 0xffffff8008c09c00 - 0xffffff8008c7e5b0   (   467 KB)
+    fixed   : 0xffffffbefe7fd000 - 0xffffffbefec00000   (  4108 KB)
+    PCI I/O : 0xffffffbefee00000 - 0xffffffbeffe00000   (    16 MB)
+    vmemmap : 0xffffffbf00000000 - 0xffffffc000000000   (     4 GB maximum)
+              0xffffffbf00000000 - 0xffffffbf04000000   (    64 MB actual)
+    memory  : 0xffffffc000000000 - 0xffffffc100000000   (  4096 MB)
+SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+Preemptible hierarchical RCU implementation.
+	RCU kthread priority: 1.
+NR_IRQS:64 nr_irqs:64 0
+GICv2m: DT overriding V2M MSI_TYPER (base:72, num:16)
+GICv2m: range[mem 0x652e0000-0x652e0fff], SPI[72:87]
+GICv2m: DT overriding V2M MSI_TYPER (base:88, num:16)
+GICv2m: range[mem 0x652f0000-0x652f0fff], SPI[88:103]
+GICv2m: DT overriding V2M MSI_TYPER (base:104, num:16)
+GICv2m: range[mem 0x65300000-0x65300fff], SPI[104:119]
+GICv2m: DT overriding V2M MSI_TYPER (base:120, num:16)
+GICv2m: range[mem 0x65310000-0x65310fff], SPI[120:135]
+GICv2m: DT overriding V2M MSI_TYPER (base:136, num:16)
+GICv2m: range[mem 0x65320000-0x65320fff], SPI[136:151]
+GICv2m: DT overriding V2M MSI_TYPER (base:152, num:16)
+GICv2m: range[mem 0x65330000-0x65330fff], SPI[152:167]
+GICv2m: DT overriding V2M MSI_TYPER (base:168, num:16)
+GICv2m: range[mem 0x65340000-0x65340fff], SPI[168:183]
+GICv2m: DT overriding V2M MSI_TYPER (base:184, num:16)
+GICv2m: range[mem 0x65350000-0x65350fff], SPI[184:199]
+GIC: PPI13 is secure or misconfigured
+GIC: PPI14 is secure or misconfigured
+arm_arch_timer: WARNING: Invalid trigger for IRQ2, assuming level low
+arm_arch_timer: WARNING: Please fix your firmware
+arm_arch_timer: WARNING: Invalid trigger for IRQ3, assuming level low
+arm_arch_timer: WARNING: Please fix your firmware
+arm_arch_timer: Architected cp15 timer(s) running at 25.00MHz (phys).
+clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x5c40939b5, m
+ax_idle_ns: 440795202646 ns
+sched_clock: 56 bits at 25MHz, resolution 40ns, wraps every 4398046511100ns
+Console: colour dummy device 80x25
+Calibrating delay loop (skipped), value calculated using timer frequency.. 50.00
+ BogoMIPS (lpj=100000)
+pid_max: default: 32768 minimum: 301
+Security Framework initialized
+Mount-cache hash table entries: 8192 (order: 4, 65536 bytes)
+Mountpoint-cache hash table entries: 8192 (order: 4, 65536 bytes)
+ftrace: allocating 26719 entries in 105 pages
+ASID allocator initialised with 65536 entries
+EFI services will not be available.
+Detected PIPT I-cache on CPU1
+CPU1: Booted secondary processor [411fd073]
+Detected PIPT I-cache on CPU2
+CPU2: Booted secondary processor [411fd073]
+Detected PIPT I-cache on CPU3
+CPU3: Booted secondary processor [411fd073]
+Brought up 4 CPUs
+SMP: Total of 4 processors activated.
+CPU features: detected feature: 32-bit EL0 Support
+CPU: All CPU(s) started at EL2
+devtmpfs: initialized
+DMI not present or invalid.
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645
+041785100000 ns
+xor: measuring software checksum speed
+   8regs     :  6488.000 MB/sec
+   8regs_prefetch:  5852.000 MB/sec
+   32regs    :  6963.000 MB/sec
+   32regs_prefetch:  6214.000 MB/sec
+xor: using function: 32regs (6963.000 MB/sec)
+pinctrl core: initialized pinctrl subsystem
+NET: Registered protocol family 16
+vdso: 2 pages (1 code @ ffffff8008845000, 1 data @ ffffff8008b34000)
+DMA: preallocated 256 KiB pool for atomic allocations
+irq: type mismatch, failed to map hwirq-29 for /soc/interrupt-controller@6521000
+0!
+HugeTLB registered 2 MB page size, pre-allocated 0 pages
+raid6: int64x1  gen()  1098 MB/s
+raid6: int64x1  xor()  1124 MB/s
+raid6: int64x2  gen()  1499 MB/s
+raid6: int64x2  xor()  1592 MB/s
+raid6: int64x4  gen()  1989 MB/s
+raid6: int64x4  xor()  1783 MB/s
+raid6: int64x8  gen()  2643 MB/s
+raid6: int64x8  xor()  1641 MB/s
+raid6: neonx1   gen()  2160 MB/s
+raid6: neonx1   xor()  1699 MB/s
+raid6: neonx2   gen()  2941 MB/s
+raid6: neonx2   xor()  2476 MB/s
+raid6: neonx4   gen()  3814 MB/s
+raid6: neonx4   xor()  2954 MB/s
+raid6: neonx8   gen()  4377 MB/s
+raid6: neonx8   xor()  3252 MB/s
+raid6: using algorithm neonx8 gen() 4377 MB/s
+raid6: .... xor() 3252 MB/s, rmw enabled
+raid6: using intx1 recovery algorithm
+arm-smmu 64000000.mmu: probing hardware configuration...
+arm-smmu 64000000.mmu: SMMUv2 with:
+arm-smmu 64000000.mmu: 	stage 2 translation
+arm-smmu 64000000.mmu: 	stream matching with 64 register groups, mask 0x7fff
+arm-smmu 64000000.mmu: 	32 context banks (32 stage-2 only)
+arm-smmu 64000000.mmu: 	Supported page sizes: 0x60211000
+arm-smmu 64000000.mmu: 	Stage-2: 48-bit IPA -> 48-bit PA
+arm-smmu 64000000.mmu: registered 0 master devices
+vgaarb: loaded
+SCSI subsystem initialized
+libata version 3.00 loaded.
+ssp-pl022 66180000.ssp: ARM PL022 driver, device ID: 0x00241022
+ssp-pl022 66180000.ssp: mapped registers from 0x0000000066180000 to ffffff8008c9
+8000
+ssp-pl022 66180000.ssp: Failed to work in dma mode, work without dma!
+ssp-pl022 66190000.ssp: ARM PL022 driver, device ID: 0x00241022
+ssp-pl022 66190000.ssp: mapped registers from 0x0000000066190000 to ffffff8008c9
+a000
+ssp-pl022 66190000.ssp: Failed to work in dma mode, work without dma!
+usbcore: registered new interface driver usbfs
+usbcore: registered new interface driver hub
+usbcore: registered new device driver usb
+pps_core: LinuxPPS API ver. 1 registered
+pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@l
+inux.it>
+PTP clock support registered
+Key type mmc registered
+dmi: Firmware registration failed.
+clocksource: Switched to clocksource arch_sys_counter
+NET: Registered protocol family 2
+TCP established hash table entries: 32768 (order: 6, 262144 bytes)
+TCP bind hash table entries: 32768 (order: 8, 1835008 bytes)
+TCP: Hash tables configured (established 32768 bind 32768)
+UDP hash table entries: 2048 (order: 6, 262144 bytes)
+UDP-Lite hash table entries: 2048 (order: 6, 262144 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+PCI: CLS 0 bytes, default 128
+futex hash table entries: 1024 (order: 5, 131072 bytes)
+workingset: timestamp_bits=46 max_order=20 bucket_order=0
+squashfs: version 4.0 (2009/01/31) Phillip Lougher
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+Block layer SCSI generic (bsg) driver version 0.4 loaded (major 250)
+io scheduler noop registered
+io scheduler deadline registered
+io scheduler cfq registered (default)
+brcm-sata-phy 663f0100.sata_phy: registered 2 port(s)
+libphy: mdio_driver_register: phy-bcm-ns2-pci
+libphy: mdio_driver_register: ns2-usb3-phy
+bcm-ns2-usb2phy 67010800.usbphy: Registered NS2 USB2H Phy
+bcm-ns2-usb2phy 67011800.usbphy: Registered NS2 USB2H Phy
+dma-pl330 61360000.dma: Loaded driver for PL330 DMAC-241330
+dma-pl330 61360000.dma: 	DBUFF-1024x8bytes Num_Chans-8 Num_Peri-0 Num_Eve
+nts-9
+Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+66100000.serial: ttyS1 at MMIO 0x66100000 (irq = 100, base_baud = 8333333) is a 
+16550A
+66110000.serial: ttyS2 at MMIO 0x66110000 (irq = 101, base_baud = 8333333) is a 
+16550A
+66120000.serial: ttyS3 at MMIO 0x66120000 (irq = 102, base_baud = 8333333) is a 
+16550A
+66130000.serial: ttyS0 at MMIO 0x66130000 (irq = 103, base_baud = 1562500) is a 
+16550A
+console [ttyS0] enabled
+brd: module loaded
+at25 spi32765.0: 128 KByte at25 eeprom, pagesize 256
+ahci 663f2000.ahci: masking port_map 0x3 -> 0x3
+ahci 663f2000.ahci: SSS flag set, parallel bus scan disabled
+ahci 663f2000.ahci: AHCI 0001.0300 32 slots 2 ports 6 Gbps 0x3 impl platform mod
+e
+ahci 663f2000.ahci: flags: 64bit ncq sntf stag clo pmp fbs slum part 
+scsi host0: ahci
+scsi host1: ahci
+ata1: SATA max UDMA/133 mmio [mem 0x663f2000-0x663f2fff] port 0x100 irq 106
+ata2: SATA max UDMA/133 mmio [mem 0x663f2000-0x663f2fff] port 0x180 irq 106
+bcmspi_setup:628 cru_control 0x106
+m25p80 spi1.0: found w25q64dw, expected m25p80
+random: fast init done
+m25p80 spi1.0: w25q64dw (8192 Kbytes)
+6 ofpart partitions found on MTD device spi1.0
+Creating 6 MTD partitions on "spi1.0":
+0x000000000000-0x000000080000 : "bl0"
+0x000000080000-0x0000001d0000 : "fip"
+0x0000001d0000-0x0000001f0000 : "env"
+0x0000001f0000-0x000000200000 : "dtb"
+0x000000200000-0x000000400000 : "kernel"
+0x000000400000-0x000000401000 : "rootfs"
+libphy: Fixed MDIO Bus: probed
+libphy: iProc MDIO mux bus: probed
+libphy: mdio_mux: probed
+mdio_bus 0.0:00: mdio_device_register
+phy-bcm-ns2-pci 0.0:00: 0.0:00 PHY registered
+libphy: mdio_mux: probed
+mdio_bus 0.1:00: mdio_device_register
+ns2-usb3-phy 0.1:00: registered 0 phy(s)
+libphy: mdio_mux: probed
+mdio_bus 0.7:00: mdio_device_register
+phy-bcm-ns2-pci 0.7:00: 0.7:00 PHY registered
+libphy: mdio_mux: probed
+mdio-mux-iproc 6602023c.mdio-mux: Version 1.0
+mdio-mux-iproc 6602023c.mdio-mux: iProc mdiomux registered
+e1000e: Intel(R) PRO/1000 Network Driver - 3.2.6-k
+e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+ehci-pci: EHCI PCI platform driver
+ehci-platform: EHCI generic platform driver
+ehci-platform 66480000.usb: EHCI Host Controller
+ehci-platform 66480000.usb: new USB bus registered, assigned bus number 1
+ehci-platform 66480000.usb: irq 111, io mem 0x66480000
+ehci-platform 66480000.usb: USB 2.0 started, EHCI 1.00
+hub 1-0:1.0: USB hub found
+hub 1-0:1.0: 1 port detected
+ehci-platform 664a0000.usb: EHCI Host Controller
+ata1: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+ata1.00: ATA-8: HGST HTS545025A7E330, GREOA340, max UDMA/133
+ata1.00: 488397168 sectors, multi 16: LBA48 NCQ (depth 31/32)
+ata1.00: configured for UDMA/133
+scsi 0:0:0:0: Direct-Access     ATA      HGST HTS545025A7 A340 PQ: 0 ANSI: 5
+sd 0:0:0:0: [sda] 488397168 512-byte logical blocks: (250 GB/233 GiB)
+sd 0:0:0:0: [sda] 4096-byte physical blocks
+sd 0:0:0:0: [sda] Write Protect is off
+sd 0:0:0:0: [sda] Mode Sense: 00 3a 00 00
+sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled, doesn't support DPO
+ or FUA
+ehci-platform 664a0000.usb: new USB bus registered, assigned bus number 2
+ehci-platform 664a0000.usb: irq 112, io mem 0x664a0000
+ehci-platform 664a0000.usb: USB 2.0 started, EHCI 1.00
+hub 2-0:1.0: USB hub found
+hub 2-0:1.0: 1 port detected
+ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+ohci-pci: OHCI PCI platform driver
+ohci-platform: OHCI generic platform driver
+ohci-platform 66480800.usb: Generic Platform OHCI controller
+ohci-platform 66480800.usb: new USB bus registered, assigned bus number 3
+ sda: sda1
+sd 0:0:0:0: [sda] Attached SCSI disk
+ata2: SATA link down (SStatus 0 SControl 300)
+ohci-platform 66480800.usb: irq 111, io mem 0x66480800
+hub 3-0:1.0: USB hub found
+hub 3-0:1.0: 1 port detected
+ohci-platform 664a0800.usb: Generic Platform OHCI controller
+ohci-platform 664a0800.usb: new USB bus registered, assigned bus number 4
+ohci-platform 664a0800.usb: irq 112, io mem 0x664a0800
+hub 4-0:1.0: USB hub found
+hub 4-0:1.0: 1 port detected
+usbcore: registered new interface driver usb-storage
+mousedev: PS/2 mouse device common for all mice
+i2c /dev entries driver
+bcm-iproc-i2c 66080000.i2c: bus set to 100000 Hz
+bcm-iproc-i2c 660b0000.i2c: bus set to 100000 Hz
+pca954x 1-0070: probe failed
+sp805-wdt 66090000.watchdog: registration successful
+md: linear personality registered for level -1
+md: raid0 personality registered for level 0
+md: raid1 personality registered for level 1
+md: raid10 personality registered for level 10
+md: multipath personality registered for level -4
+md: faulty personality registered for level -5
+device-mapper: ioctl: 4.35.0-ioctl (2016-06-23) initialised: dm-devel@redhat.com
+sdhci: Secure Digital Host Controller Interface driver
+sdhci: Copyright(c) Pierre Ossman
+sdhci-pltfm: SDHCI platform and OF driver helper
+mmc0: SDHCI controller on 66420000.sdhci [66420000.sdhci] using ADMA
+mmc0: new HS200 MMC card at address 0001
+mmcblk0: mmc0:0001 P1XXXX 3.60 GiB 
+mmcblk0boot0: mmc0:0001 P1XXXX partition 1 2.00 MiB
+mmcblk0boot1: mmc0:0001 P1XXXX partition 2 2.00 MiB
+mmcblk0rpmb: mmc0:0001 P1XXXX partition 3 128 KiB
+ mmcblk0: p1 p2
+mmc1: SDHCI controller on 66430000.sdhci [66430000.sdhci] using ADMA
+usbcore: registered new interface driver usbhid
+usbhid: USB HID core driver
+cpld_init:
+cplddrv: started
+cpld_spi_probe:
+u32 classifier
+    Actions configured
+NET: Registered protocol family 10
+sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
+NET: Registered protocol family 17
+Key type dns_resolver registered
+Btrfs loaded, crc32c=crc32c-generic
+OF: PCI: host bridge /pcie@20020000 ranges:
+OF: PCI:   MEM 0x00000000..0x1fffffff -> 0x00000000
+iproc-pcie 20020000.pcie: PCIe status=0x1
+iproc-pcie 20020000.pcie: ob window [1]: offset 0xd28 axi 0x0000000000000000 pci
+ 0x0000000000000000
+iproc-pcie 20020000.pcie: oarr lo 0x3 oarr hi 0x0
+iproc-pcie 20020000.pcie: omap lo 0x0 omap hi 0x0
+iproc-pcie 20020000.pcie: ob window [0]: offset 0xd20 axi 0x0000000010000000 pci
+ 0x0000000010000000
+iproc-pcie 20020000.pcie: oarr lo 0x10000003 oarr hi 0x0
+iproc-pcie 20020000.pcie: omap lo 0x10000000 omap hi 0x0
+iproc-pcie 20020000.pcie: PCI host bridge to bus 0000:00
+pci_bus 0000:00: root bus resource [bus 00-ff]
+pci_bus 0000:00: root bus resource [mem 0x00000000-0x1fffffff]
+iproc-pcie 20020000.pcie: link: UP
+iproc-pcie 20020000.pcie: not using iProc MSI
+pci 0000:00:00.0: [14e4:d713] type 01 class 0x060400
+pci 0000:00:00.0: PME# supported from D0 D3hot D3cold
+pci 0000:00:00.0: cannot attach to SMMU, is it on the same bus?
+iommu: Adding device 0000:00:00.0 to group 0
+pci 0000:00:00.0: bridge configuration invalid ([bus 00-00]), reconfiguring
+pci 0000:01:00.0: [1135:007a] type 00 class 0x000000
+pci 0000:01:00.0: PME# supported from D0 D3hot D3cold
+pci 0000:01:00.0: cannot attach to SMMU, is it on the same bus?
+iommu: Adding device 0000:01:00.0 to group 0
+pci_bus 0000:01: busn_res: [bus 01-ff] end is updated to 01
+pci 0000:00:00.0: PCI bridge to [bus 01]
+irq: no irq domain found for /pcie@20020000 !
+irq: no irq domain found for /pcie@20020000 !
+OF: PCI: host bridge /pcie@50020000 ranges:
+OF: PCI:   MEM 0x30000000..0x37ffffff -> 0x00000000
+iproc-pcie 50020000.pcie: PCIe status=0x1
+iproc-pcie 50020000.pcie: ob window [1]: offset 0xd28 axi 0x0000000000000000 pci
+ 0x0000000000000000
+iproc-pcie 50020000.pcie: oarr lo 0x1 oarr hi 0x0
+iproc-pcie 50020000.pcie: omap lo 0x0 omap hi 0x0
+iproc-pcie 50020000.pcie: PCI host bridge to bus 0004:00
+pci_bus 0004:00: root bus resource [bus 00-ff]
+pci_bus 0004:00: root bus resource [mem 0x30000000-0x37ffffff] (bus address [0x0
+0000000-0x07ffffff])
+iproc-pcie 50020000.pcie: link: UP
+iproc-pcie 50020000.pcie: not using iProc MSI
+pci 0004:00:00.0: [14e4:d713] type 01 class 0x060400
+pci 0004:00:00.0: PME# supported from D0 D3hot D3cold
+pci 0004:00:00.0: cannot attach to SMMU, is it on the same bus?
+iommu: Adding device 0004:00:00.0 to group 1
+pci 0004:00:00.0: bridge configuration invalid ([bus 00-00]), reconfiguring
+pci 0004:01:00.0: [1135:0079] type 00 class 0x000000
+pci 0004:01:00.0: PME# supported from D0 D3hot D3cold
+pci 0004:01:00.0: cannot attach to SMMU, is it on the same bus?
+iommu: Adding device 0004:01:00.0 to group 1
+pci_bus 0004:01: busn_res: [bus 01-ff] end is updated to 01
+pci 0004:00:00.0: PCI bridge to [bus 01]
+irq: no irq domain found for /pcie@20020000 !
+irq: no irq domain found for /pcie@20020000 !
+OF: PCI: host bridge /pcie@50030000 ranges:
+OF: PCI:   MEM 0x38000000..0x3fffffff -> 0x08000000
+iproc-pcie 50030000.pcie: PCIe status=0x1
+iproc-pcie 50030000.pcie: ob window [1]: offset 0xd28 axi 0x0000000000000000 pci
+ 0x0000000008000000
+iproc-pcie 50030000.pcie: oarr lo 0x1 oarr hi 0x0
+iproc-pcie 50030000.pcie: omap lo 0x8000000 omap hi 0x0
+iproc-pcie 50030000.pcie: PCI host bridge to bus 0005:00
+pci_bus 0005:00: root bus resource [bus 00-ff]
+pci_bus 0005:00: root bus resource [mem 0x38000000-0x3fffffff] (bus address [0x0
+8000000-0x0fffffff])
+iproc-pcie 50030000.pcie: PHY or data link is INACTIVE!
+iproc-pcie 50030000.pcie: no PCIe EP device detected
+pci_bus 0005:00: busn_res: [bus 00-ff] is released
+iproc-pcie 50030000.pcie: PCIe controller setup failed
+OF: PCI: host bridge /pcie@50040000 ranges:
+OF: PCI:   MEM 0x40000000..0x47ffffff -> 0x10000000
+iproc-pcie 50040000.pcie: PCIe status=0x1
+iproc-pcie 50040000.pcie: ob window [1]: offset 0xd28 axi 0x0000000000000000 pci
+ 0x0000000010000000
+iproc-pcie 50040000.pcie: oarr lo 0x1 oarr hi 0x0
+iproc-pcie 50040000.pcie: omap lo 0x10000000 omap hi 0x0
+iproc-pcie 50040000.pcie: PCI host bridge to bus 0006:00
+pci_bus 0006:00: root bus resource [bus 00-ff]
+pci_bus 0006:00: root bus resource [mem 0x40000000-0x47ffffff] (bus address [0x1
+0000000-0x17ffffff])
+iproc-pcie 50040000.pcie: PHY or data link is INACTIVE!
+iproc-pcie 50040000.pcie: no PCIe EP device detected
+pci_bus 0006:00: busn_res: [bus 00-ff] is released
+iproc-pcie 50040000.pcie: PCIe controller setup failed
+OF: PCI: host bridge /pcie@50050000 ranges:
+OF: PCI:   MEM 0x48000000..0x4fffffff -> 0x18000000
+iproc-pcie 50050000.pcie: PCIe status=0x1
+iproc-pcie 50050000.pcie: ob window [0]: offset 0xd20 axi 0x0000000000000000 pci
+ 0x0000000018000000
+iproc-pcie 50050000.pcie: oarr lo 0x1 oarr hi 0x0
+iproc-pcie 50050000.pcie: omap lo 0x18000000 omap hi 0x0
+iproc-pcie 50050000.pcie: PCI host bridge to bus 0007:00
+pci_bus 0007:00: root bus resource [bus 00-ff]
+pci_bus 0007:00: root bus resource [mem 0x48000000-0x4fffffff] (bus address [0x1
+8000000-0x1fffffff])
+iproc-pcie 50050000.pcie: link: UP
+iproc-pcie 50050000.pcie: not using iProc MSI
+pci 0007:00:00.0: [14e4:d713] type 01 class 0x060400
+pci 0007:00:00.0: PME# supported from D0 D3hot D3cold
+pci 0007:00:00.0: cannot attach to SMMU, is it on the same bus?
+iommu: Adding device 0007:00:00.0 to group 2
+pci 0007:00:00.0: bridge configuration invalid ([bus 00-00]), reconfiguring
+pci 0007:01:00.0: [10ec:8168] type 00 class 0x020000
+pci 0007:01:00.0: reg 0x10: [io  0x0000-0x00ff]
+pci 0007:01:00.0: reg 0x18: [mem 0x48000000-0x48000fff 64bit]
+pci 0007:01:00.0: reg 0x20: [mem 0x00004000-0x00007fff 64bit]
+pci 0007:01:00.0: supports D1 D2
+pci 0007:01:00.0: PME# supported from D0 D1 D2 D3hot D3cold
+pci 0007:01:00.0: cannot attach to SMMU, is it on the same bus?
+iommu: Adding device 0007:01:00.0 to group 2
+pci 0007:01:00.1: [10ec:816a] type 00 class 0x070002
+pci 0007:01:00.1: reg 0x10: [io  0xffffff00-0xffffffff]
+pci 0007:01:00.1: reg 0x18: [mem 0x00008000-0x00008fff 64bit]
+pci 0007:01:00.1: reg 0x20: [mem 0x0000c000-0x0000ffff 64bit]
+pci 0007:01:00.1: supports D1 D2
+pci 0007:01:00.1: PME# supported from D0 D1 D2 D3hot D3cold
+pci 0007:01:00.1: cannot attach to SMMU, is it on the same bus?
+iommu: Adding device 0007:01:00.1 to group 2
+pci 0007:01:00.2: [10ec:816b] type 00 class 0x070002
+pci 0007:01:00.2: reg 0x10: [io  0xffffff00-0xffffffff]
+pci 0007:01:00.2: reg 0x18: [mem 0x00010000-0x00010fff 64bit]
+pci 0007:01:00.2: reg 0x20: [mem 0x00014000-0x00017fff 64bit]
+pci 0007:01:00.2: supports D1 D2
+pci 0007:01:00.2: PME# supported from D0 D1 D2 D3hot D3cold
+pci 0007:01:00.2: cannot attach to SMMU, is it on the same bus?
+iommu: Adding device 0007:01:00.2 to group 2
+pci 0007:01:00.3: [10ec:816c] type 00 class 0x0c0701
+pci 0007:01:00.3: reg 0x10: [io  0xffffff00-0xffffffff]
+pci 0007:01:00.3: reg 0x18: [mem 0x00018000-0x00018fff 64bit]
+pci 0007:01:00.3: reg 0x20: [mem 0x0001c000-0x0001ffff 64bit]
+pci 0007:01:00.3: supports D1 D2
+pci 0007:01:00.3: PME# supported from D0 D1 D2 D3hot D3cold
+pci 0007:01:00.3: cannot attach to SMMU, is it on the same bus?
+iommu: Adding device 0007:01:00.3 to group 2
+pci 0007:01:00.4: [10ec:816d] type 00 class 0x0c0320
+pci 0007:01:00.4: reg 0x10: [mem 0x00020000-0x00020fff]
+pci 0007:01:00.4: reg 0x18: [mem 0x00024000-0x00027fff 64bit]
+pci 0007:01:00.4: PME# supported from D0 D3cold
+pci 0007:01:00.4: cannot attach to SMMU, is it on the same bus?
+iommu: Adding device 0007:01:00.4 to group 2
+pci_bus 0007:01: busn_res: [bus 01-ff] end is updated to 01
+pci 0007:00:00.0: BAR 8: assigned [mem 0x48000000-0x480fffff]
+pci 0007:01:00.0: BAR 4: assigned [mem 0x48000000-0x48003fff 64bit]
+pci 0007:01:00.1: BAR 4: assigned [mem 0x48004000-0x48007fff 64bit]
+pci 0007:01:00.2: BAR 4: assigned [mem 0x48008000-0x4800bfff 64bit]
+pci 0007:01:00.3: BAR 4: assigned [mem 0x4800c000-0x4800ffff 64bit]
+pci 0007:01:00.4: BAR 2: assigned [mem 0x48010000-0x48013fff 64bit]
+pci 0007:01:00.0: BAR 2: assigned [mem 0x48014000-0x48014fff 64bit]
+pci 0007:01:00.1: BAR 2: assigned [mem 0x48015000-0x48015fff 64bit]
+pci 0007:01:00.2: BAR 2: assigned [mem 0x48016000-0x48016fff 64bit]
+pci 0007:01:00.3: BAR 2: assigned [mem 0x48017000-0x48017fff 64bit]
+pci 0007:01:00.4: BAR 0: assigned [mem 0x48018000-0x48018fff]
+pci 0007:01:00.0: BAR 0: no space for [io  size 0x0100]
+pci 0007:01:00.0: BAR 0: failed to assign [io  size 0x0100]
+pci 0007:01:00.1: BAR 0: no space for [io  size 0x0100]
+pci 0007:01:00.1: BAR 0: failed to assign [io  size 0x0100]
+pci 0007:01:00.2: BAR 0: no space for [io  size 0x0100]
+pci 0007:01:00.2: BAR 0: failed to assign [io  size 0x0100]
+pci 0007:01:00.3: BAR 0: no space for [io  size 0x0100]
+pci 0007:01:00.3: BAR 0: failed to assign [io  size 0x0100]
+pci 0007:00:00.0: PCI bridge to [bus 01]
+pci 0007:00:00.0:   bridge window [mem 0x48000000-0x480fffff]
+irq: no irq domain found for /pcie@20020000 !
+irq: no irq domain found for /pcie@20020000 !
+r8169 Gigabit Ethernet driver 2.3LK-NAPI loaded
+r8169 0007:01:00.0 eth0: RTL8168ep/8111ep at 0xffffff8008e7e000, 08:00:37:60:f6:
+b9, XID 10200800 IRQ 116
+r8169 0007:01:00.0 eth0: jumbo features [frames: 9200 bytes, tx checksumming: ko
+]
+ehci-pci 0007:01:00.4: EHCI Host Controller
+ehci-pci 0007:01:00.4: new USB bus registered, assigned bus number 5
+ehci-pci 0007:01:00.4: irq 115, io mem 0x48018000
+ehci-pci 0007:01:00.4: USB 0.0 started, EHCI 1.00
+hub 5-0:1.0: USB hub found
+hub 5-0:1.0: 1 port detected
+console [netcon0] enabled
+netconsole: network logging started
+ttyS0 - failed to request DMA
+md: Waiting for all devices to be available before autodetect
+md: If you don't use raid, use raid=noautodetect
+md: Autodetecting RAID arrays.
+md: Scanned 0 and added 0 devices.
+md: autorun ...
+md: ... autorun DONE.
+EXT4-fs (mmcblk0p2): couldn't mount as ext3 due to feature incompatibilities
+EXT4-fs (mmcblk0p2): couldn't mount as ext2 due to feature incompatibilities
+EXT4-fs (mmcblk0p2): INFO: recovery required on readonly filesystem
+EXT4-fs (mmcblk0p2): write access will be enabled during recovery
+EXT4-fs (mmcblk0p2): recovery complete
+EXT4-fs (mmcblk0p2): mounted filesystem with ordered data mode. Opts: (null)
+VFS: Mounted root (ext4 filesystem) readonly on device 179:2.
+devtmpfs: mounted
+Freeing unused kernel memory: 768K (ffffffc000a70000 - ffffffc000b30000)
+INIT: version 2.88 booting
+Starting udev
+udevd[188]: starting version 3.2
+udevd[189]: starting eudev-3.2
+EXT4-fs (mmcblk0p2): re-mounted. Opts: (null)
+hwclock: can't open '/dev/misc/rtc': No such file or directory
+Mon Jul  3 05:54:28 UTC 2017
+hwclock: can't open '/dev/misc/rINIT: Entering runlevel: 3
+Configuring network interfaces... r8169 0007:01:00.0 eth0: link down
+r8169 0007:01:00.0 eth0: link down
+IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
+done.
+Starting OpenBSD Secure Shell server: sshd
+done.
+Starting rpcbind daemon...done.
+starting statd: r8169 0007:01:00.0 eth0: link up
+IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+done
+Starting atd: OK
+hwclock: can't open '/dev/misc/rtc': No such file or directory
+exportfs: can't open /etc/exports for reading
+NFS daemon support not enabled in kernel
+starting rsyslogd ... done
+Starting internet superserver: xinetd.
+Starting crond: OK
+
+Wind River Linux 9.0.0.4 bcm-587xx console
+
+bcm-587xx login: root
+root@bcm-587xx:~# ifconfig
+eth0      Link encap:Ethernet  HWaddr 08:00:37:60:f6:b9  
+          inet addr:192.168.2.99  Bcast:192.168.2.255  Mask:255.255.255.0
+          inet6 addr: fe80::a00:37ff:fe60:f6b9/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:118 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:15 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:11170 (10.9 KiB)  TX bytes:942 (942.0 B)
+
+root@bcm-587xx:~# ./coff.sh 
+Write 0x08 <= 0xb0
+Write 0x10 <= 0xff
+Write 0x13 <= 0x0c
+Write 0x05 <= 0x11
+root@bcm-587xx:~# echo mem > /sys/power/state
+PM: Syncing filesystems ... done.
+Freezing user space processes ... (elapsed 0.001 seconds) done.
+Double checking all user space processes after OOM killer disable... (elapsed 0.
+000 seconds) 
+Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
+sd 0:0:0:0: [sda] Synchronizing SCSI cache
+sd 0:0:0:0: [sda] Stopping disk
+PM: suspend of devices complete after 850.322 msecs
+PM: late suspend of devices complete after 0.529 msecs
+PM: noirq suspend of devices complete after 17.299 msecs
+Disabling non-boot CPUs ...
+CPU1: shutdown
+psci: CPU1 killed.
+CPU2: shutdown
+psci: CPU2 killed.
+CPU3: shutdown
+psci: CPU3 killed.
+INFO:    ns2_pwr_domain_suspend
+INFO:    Put QSPI to default PoR state...
+INFO:    Done
+øINFO:    Free_base: 0x651048c0, Free_size: 0x651048c8, addr: 0x65104800, size: 
+0x3800
+INFO:    Scan and configure IDM slave wrappers
+INFO:    IDM slave wrapper scan and config complete
+INFO:    Scan and configure IDM master wrappers
+INFO:    IDMM 21                AMAC: 0000000061090408 current ARCACHE=3 AWCACHE
+=3 (00030185)
+INFO:    IDMM 21                AMAC: 0000000061090408 updated ARCACHE=f AWCACHE
+=f (000F0785)
+INFO:    IDMM 22         AXI_PCIE_M0: 0000000021000408 current ARCACHE=1 AWCACHE
+=1 (40008223)
+INFO:    IDMM 22         AXI_PCIE_M0: 0000000021000408 updated ARCACHE=f AWCACHE
+=f (400083FF)
+INFO:    IDMM 23         AXI_PCIE_M4: 0000000051000408 current ARCACHE=1 AWCACHE
+=1 (40008223)
+INFO:    IDMM 23         AXI_PCIE_M4: 0000000051000408 updated ARCACHE=f AWCACHE
+=f (400083FF)
+INFO:    IDMM 26                DMAC: 0000000067002408 current ARCACHE=0 AWCACHE
+=0 (3C001E01)
+INFO:    IDMM 26                DMAC: 0000000067002408 updated ARCACHE=f AWCACHE
+=f (3CFF1E01)
+INFO:    IDMM 29            USB2H_M0: 0000000067010408 current ARCACHE=0 AWCACHE
+=0 (03DE0000)
+INFO:    IDMM 29            USB2H_M0: 0000000067010408 updated ARCACHE=f AWCACHE
+=f (03DE03FC)
+INFO:    IDMM 30            USB2H_M1: 0000000067011408 current ARCACHE=0 AWCACHE
+=0 (03DE0000)
+INFO:    IDMM 30            USB2H_M1: 0000000067011408 updated ARCACHE=f AWCACHE
+=f (03DE03FC)
+INFO:    IDMM 31            USB2_DRD: 0000000067012408 current ARCACHE=0 AWCACHE
+=0 (03DE0000)
+INFO:    IDMM 31            USB2_DRD: 0000000067012408 updated ARCACHE=f AWCACHE
+=f (03DE03FC)
+INFO:    IDMM 32             SDIO_M0: 0000000067013408 current ARCACHE=0 AWCACHE
+=0 (00000001)
+INFO:    IDMM 32             SDIO_M0: 0000000067013408 updated ARCACHE=f AWCACHE
+=f (7F800001)
+INFO:    IDMM 33             SDIO_M1: 0000000067014408 current ARCACHE=0 AWCACHE
+=0 (00000001)
+INFO:    IDMM 33             SDIO_M1: 0000000067014408 updated ARCACHE=f AWCACHE
+=f (7F800001)
+INFO:    IDM master wrapper scan and config complete
+NOTICE:  IHOST: Broadcom BCM58713 B0
+INFO:    mdio_update: phy_id 3, addr 0, value 0x808
+INFO:    mdio_update: phy_id 3, addr 1, value 0x1804
+INFO:    mdio_update: phy_id 3, addr 2, value 0x4e8a
+INFO:    mdio_update: phy_id 3, addr 3, value 0x601
+INFO:    mdio_update: phy_id 3, addr 4, value 0xcce0
+INFO:    mdio_update: phy_id 3, addr 5, value 0x580
+INFO:    mdio_update: phy_id 3, addr 6, value 0xb000
+INFO:    mdio_update: phy_id 3, addr 7, value 0x5fff
+INFO:    mdio_update: phy_id 3, addr 8, value 0x0
+INFO:    mdio_update: phy_id 3, addr 9, value 0x120c
+INFO:    mdio_update: phy_id 4, addr 0, value 0x808
+INFO:    mdio_update: phy_id 4, addr 1, value 0x1804
+INFO:    mdio_update: phy_id 4, addr 2, value 0x4e8a
+INFO:    mdio_update: phy_id 4, addr 3, value 0x601
+INFO:    mdio_update: phy_id 4, addr 4, value 0xcce0
+INFO:    mdio_update: phy_id 4, addr 5, value 0x580
+INFO:    mdio_update: phy_id 4, addr 6, value 0xb000
+INFO:    mdio_update: phy_id 4, addr 7, value 0x5fff
+INFO:    mdio_update: phy_id 4, addr 8, value 0x0
+INFO:    mdio_update: phy_id 4, addr 9, value 0x120c
+INFO:    mdio_update: phy_id 2, addr 0, value 0x808
+NOTICE:  Booting Trusted Firmware
+NOTICE:  BL1: v1.2(debug):1666e4a
+NOTICE:  BL1: Built : 14:50:07, Jun 16 2017
+INFO:    BL1: RAM 0x65104800 - 0x65108000
+INFO:    BL1: Loading BL2
+INFO:    memmap_block_open 0x68000000
+WARNING: Firmware Image Package header check failed.
+WARNING: Failed to obtain reference to image id=1 (-2)
+INFO:    memmap_block_open 0x68020000
+WARNING: Firmware Image Package header check failed.
+WARNING: Failed to obtain reference to image id=1 (-2)
+INFO:    memmap_block_open 0x68040000
+WARNING: Firmware Image Package header check failed.
+WARNING: Failed to obtain reference to image id=1 (-2)
+INFO:    memmap_block_open 0x68060000
+WARNING: Firmware Image Package header check failed.
+WARNING: Failed to obtain reference to image id=1 (-2)
+INFO:    memmap_block_open 0x68080000
+INFO:    Loading image id=1 at address 0x65120000
+INFO:    Free_base: 0x651048c0, Free_size: 0x651048c8, addr: 0x65120000, size: 0
+x173a0
+INFO:    Image id=1 loaded at address 0x65120000, size = 0x173a0
+NOTICE:  BL1: Booting BL2
+INFO:    Entry point address = 0x65120000
+INFO:    SPSR = 0x3c5(NOTICE:  BL2: v1.2(debug):5f35f19
+NOTICE:  BL2: Built : 15:00:17, Jun 16 2017
+INFO:    BL2: Loading SCP_BL2
+INFO:    memmap_block_open 0x68000000
+WARNING: Firmware Image Package header check failed.
+WARNING: Failed to obtain reference to image id=2 (-2)
+INFO:    BL2: Loading SCP_BL2
+INFO:    memmap_block_open 0x68020000
+WARNING: Firmware Image Package header check failed.
+WARNING: Failed to obtain reference to image id=2 (-2)
+INFO:    BL2: Loading SCP_BL2
+INFO:    memmap_block_open 0x68040000
+WARNING: Firmware Image Package header check failed.
+WARNING: Failed to obtain reference to image id=2 (-2)
+INFO:    BL2: Loading SCP_BL2
+INFO:    memmap_block_open 0x68060000
+WARNING: Firmware Image Package header check failed.
+WARNING: Failed to obtain reference to image id=2 (-2)
+INFO:    BL2: Loading SCP_BL2
+INFO:    memmap_block_open 0x68080000
+INFO:    Loading image id=2 at address 0x651e0000
+INFO:    Skip reserving region [base = 0x651e0000, size = 0x5000]
+INFO:    Image id=2 loaded at address 0x651e0000, size = 0x5000
+INFO:    Waking up. No need to reload M0
+INFO:    Configuring TrustZone Controller
+INFO:    Writing temp registers
+NOTICE:  IHOST: Broadcom BCM58713 B0
+INFO:    Setup to exit self-refresh, we were in power off mode
+NOTICE:  Requested frequency 2000, new iHost frequency to 2000
+NOTICE:  
+
+<soc_sbx_northstar2_ddrintf__init>  Exiting DDR self-refresh state ...
+INFO:    Set AON_GPIO0 and GPIO2 to high
+INFO:    BL2: Configuring PCIe cluster remap
+INFO:        Configuring PCIe cluster 0 remap for 1x4 Lane
+INFO:    USB: 13131b13
+INFO:    ARM GICv2 driver initialized
+INFO:    bcm_bl2_platform_setup, wakeup entrypoint:0xffffffff651e00d8
+INFO:    ns2_pwr_domain_suspend_finishEnabling non-boot CPUs ...
+INFO:    ns2_pwr_domain_on, cpu:1
+INFO:    Setting up GIC for secondary cores
+DBG TEE-CORE:generic_boot_cpu_on_handler:372: cpu 1: a0 0x0
+DBG TEE-CORE:init_secondary_helper:359: Secondary CPU Switching to normal world 
+boot
+
+Detected PIPT I-cache on CPU1
+CPU1: Booted secondary processor [411fd073]
+ cache: parent cpu1 should not be sleeping
+CPU1 is up
+INFO:    ns2_pwr_domain_on, cpu:2
+INFO:    Setting up GIC for secondary cores
+DBG TEE-CORE:generic_boot_cpu_on_handler:372: cpu 2: a0 0x0
+DBG TEE-CORE:init_secondary_helper:359: Secondary CPU Switching to normal world 
+boot
+
+Detected PIPT I-cache on CPU2
+CPU2: Booted secondary processor [411fd073]
+ cache: parent cpu2 should not be sleeping
+CPU2 is up
+INFO:    ns2_pwr_domain_on, cpu:3
+INFO:    Setting up GIC for secondary cores
+DBG TEE-CORE:generic_boot_cpu_on_handler:372: cpu 3: a0 0x0
+DBG TEE-CORE:init_secondary_helper:359: Secondary CPU Switching to normal world 
+boot
+
+Detected PIPT I-cache on CPU3
+CPU3: Booted secondary processor [411fd073]
+ cache: parent cpu3 should not be sleeping
+CPU3 is up
+OF: PCI: host bridge /pcie@20020000 ranges:
+OF: PCI:   MEM 0x00000000..0x1fffffff -> 0x00000000
+iproc-pcie 20020000.pcie: PCIe status=0x4
+iproc-pcie 20020000.pcie: ob window [1]: offset 0xd28 axi 0x0000000000000000 pci
+ 0x0000000000000000
+iproc-pcie 20020000.pcie: oarr lo 0x3 oarr hi 0x0
+iproc-pcie 20020000.pcie: omap lo 0x0 omap hi 0x0
+iproc-pcie 20020000.pcie: ob window [0]: offset 0xd20 axi 0x0000000010000000 pci
+ 0x0000000010000000
+iproc-pcie 20020000.pcie: oarr lo 0x10000003 oarr hi 0x0
+iproc-pcie 20020000.pcie: omap lo 0x10000000 omap hi 0x0
+iproc-pcie 20020000.pcie: link: UP
+OF: PCI: host bridge /pcie@50020000 ranges:
+OF: PCI:   MEM 0x30000000..0x37ffffff -> 0x00000000
+iproc-pcie 50020000.pcie: PCIe status=0x4
+iproc-pcie 50020000.pcie: ob window [1]: offset 0xd28 axi 0x0000000000000000 pci
+ 0x0000000000000000
+iproc-pcie 50020000.pcie: oarr lo 0x1 oarr hi 0x0
+iproc-pcie 50020000.pcie: omap lo 0x0 omap hi 0x0
+iproc-pcie 50020000.pcie: link: UP
+OF: PCI: host bridge /pcie@50050000 ranges:
+OF: PCI:   MEM 0x48000000..0x4fffffff -> 0x18000000
+iproc-pcie 50050000.pcie: PCIe status=0x4
+iproc-pcie 50050000.pcie: ob window [1]: offset 0xd28 axi 0x0000000000000000 pci
+ 0x0000000018000000
+iproc-pcie 50050000.pcie: oarr lo 0x1 oarr hi 0x0
+iproc-pcie 50050000.pcie: omap lo 0x18000000 omap hi 0x0
+iproc-pcie 50050000.pcie: link: UP
+PM: noirq resume of devices complete after 636.752 msecs
+PM: early resume of devices complete after 0.638 msecs
+usb usb1: root hub lost power or was reset
+sd 0:0:0:0: [sda] Starting disk
+usb usb3: root hub lost power or was reset
+usb usb2: root hub lost power or was reset
+usb usb4: root hub lost power or was reset
+r8169 0007:01:00.0 eth0: link down
+ata2: SATA link down (SStatus 0 SControl 300)
+r8169 0007:01:00.0 eth0: link up
+ata1: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+ata1.00: configured for UDMA/133
+PM: resume of devices complete after 2898.576 msecs
+Restarting tasks ... 
+Bad mode in Error handler detected on CPU0, code 0xbf000002 -- SError
+Internal error: Oops - bad mode: 0 [#1] PREEMPT SMP
+Modules linked in:
+CPU: 0 PID: 352 Comm: rpcbind Not tainted 4.8.18-rt10-WR9.0.0.4_preempt-rt #23
+Hardware name: FX PALACIOS (DT)
+task: ffffffc0f9ac8000 task.stack: ffffffc0f8e7c000
+PC is at 0xf764159c
+LR is at 0x1558c
+pc : [<00000000f764159c>] lr : [<000000000001558c>] pstate: 600a0010
+sp : 00000000ff90dbfc
+x12: 0000000000000000 
+x11: 00000000ff90ddc0 x10: 0000000000029370 
+x9 : 00000000000292fc x8 : 000000000002b720 
+x7 : 0000000000000000 x6 : 00000000f76b4a70 
+x5 : 00000000000181cc x4 : 00000000000000c3 
+x3 : 0000000000000007 x2 : 0000000000007530 
+x1 : 0000000000000007 x0 : 00000000ff90ddc0 
+
+Process rpcbind (pid: 352, stack limit = 0xffffffc0f8e7c028)
+done.
+
+Message from syslogd@bcm-587xx at Sep 26 23:18:01 ...
+ ker---[ end trace 0000000000000002 ]---
+nel:Internal error: Oops - bad mode: 0 [#1] PREEMPT SMP
+
+Message from syslogd@bcm-587xx at Sep 26 23:18:01 ...
+ kernel:Process rpcbind (pid: 352, stack limit = 0xffffffc0f8e7c028)
+root@bcm-587xx:~# ls /dev/sda
+sda   sda1  
+root@bcm-587xx:~# ls /dev/sda           

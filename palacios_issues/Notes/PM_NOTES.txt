@@ -10,6 +10,10 @@ that the suspend is suppose to perform.
 the device and performed the C-OFF commands.
 only enabled USB(j346) in echi mode for the operation.
 
+21/09/17
+3. commented certain driver messages from the pcie-iproc.c file looks like the problem again hided
+
+
 atf
 
 https://chromium.googlesource.com/external/github.com/ARM-software/arm-trusted-firmware/+/v0.4-rc1/docs/firmware-design.md
